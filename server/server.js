@@ -1,17 +1,33 @@
-const express = require('express');
-const cors = require('cors');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const { Pool } = require("pg");
 
 const app = express();
-const port = 5000;
+app.use(cors());
+app.use(express.json()); // ให้รองรับ JSON
 
-app.use(cors()); // ให้ Backend ยอมรับการเชื่อมต่อจาก Frontend
-app.use(express.json()); // รองรับ JSON request
-
-// สร้าง API เรียกใช้งาน
-app.get('/api/hello', (req, res) => {
-    res.json({ message: 'Hello from Backend!' });
+// ตั้งค่าการเชื่อมต่อกับ PostgreSQL
+const pool = new Pool({
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+// ทดสอบ API และเชื่อมต่อกับ Database
+app.get("/users", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM users");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
