@@ -14,7 +14,7 @@ const RegisterPage = () => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:5000/auth/register', { name, email, password });
-      navigate("/login"); // หลังจากลงทะเบียนสำเร็จให้ไปหน้า login
+      navigate("/"); // หลังจากลงทะเบียนสำเร็จให้ไปหน้า login
     } catch (error) {
       setErrorMessage(error.response.data.msg || "Registration failed");
     }
@@ -64,7 +64,7 @@ const RegisterPage = () => {
           </button>
         </form>
         <div style={{ marginTop: "10px", textAlign: "center" }}>
-          <button onClick={() => navigate("/login")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
+          <button onClick={() => navigate("/")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
             Already have an account? Login
           </button>
         </div>
