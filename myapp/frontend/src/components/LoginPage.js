@@ -61,6 +61,9 @@ const LoginPage = () => {
         />
         <button type="submit">Login</button>
       </form>
+      <button onClick={() => navigate("/register")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
+            Don't have an account? Register now
+          </button>
 
       <hr />
 
