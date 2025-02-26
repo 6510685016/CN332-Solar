@@ -8,6 +8,8 @@
 ```sh
 cd backend
 npm install
+npm install express mongoose dotenv bcryptjs jsonwebtoken passport passport-google-oauth20 cookie-session cors
+
 ```
 Create a `.env` file inside `backend` and add:
 ```
@@ -23,6 +25,8 @@ npm start
 ```sh
 cd frontend
 npm install
+npm install @react-oauth/google
+
 ```
 Run the frontend server:
 ```sh
