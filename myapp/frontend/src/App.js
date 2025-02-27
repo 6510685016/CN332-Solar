@@ -1,31 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { getUsers, createUser } from "./services/userService";
+// App.js
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import LoginPage from "./components/LoginPage";
+import RegisterPage from "./components/RegisterPage";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 
 function App() {
-  const [users, setUsers] = useState([]);
-  const [name, setName] = useState("");
-
-  useEffect(() => {
-    getUsers().then(setUsers);
-  }, []);
-
-  const handleAddUser = async () => {
-    const newUser = await createUser({ name });
-    setUsers([...users, newUser]);
-    setName("");
-  };
-
   return (
-    <div>
-      <h1>Users</h1>
-      <ul>
-        {users.map((user) => (
-          <li key={user._id}>{user.name}</li>
-        ))}
-      </ul>
-      <input value={name} onChange={(e) => setName(e.target.value)} />
-      <button onClick={handleAddUser}>Add User</button>
-    </div>
+    <GoogleOAuthProvider clientId="182120910680-1a9e8dulevbqou4n8fnjlep8ht2lq71l.apps.googleusercontent.com">
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginPage />}/>
+        <Route path="/register" element={<RegisterPage />}/>
+      </Routes>
+    </Router>
+    </GoogleOAuthProvider>
   );
 }
 
