@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const User = require("../models/User");
-const { ROLE, LP, PERMISSIONS } = require('./Permission');
+const { ROLE, LP, PERMISSIONS } = require('../models/Permission');
 
 
 const router = express.Router();
@@ -33,7 +33,21 @@ router.post("/login", async (req, res) => {
   if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-  res.json({ token, user });
+  res.json({ token, user: { roles: user.roles, permissions: user.permissions } });
+});
+
+router.get("/user", (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Get token from header
+  if (!token) return res.status(401).json({ msg: "Unauthorized" });
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    if (err) return res.status(403).json({ msg: "Forbidden" });
+
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    res.json({ roles: user.roles, permissions: user.permissions });
+  });
 });
 
 // 📌 Google Login
