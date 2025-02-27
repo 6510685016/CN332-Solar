@@ -46,4 +46,4 @@ UserSchema.statics.hasPermission = function (user, permission, solarPlantId = nu
 };
 
 const User = mongoose.model("User", UserSchema);
-module.exports = { User, ROLE };
+module.exports = User;
