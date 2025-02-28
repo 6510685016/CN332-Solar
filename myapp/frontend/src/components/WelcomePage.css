@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
+.welcome-body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    background-image: url("https://thumbs.dreamstime.com/b/aerial-view-solar-cell-field-274713666.jpg");
+}
+
+h1{
+    font-family: "Mitr", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.welcome-container{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    height: 600px;
+    gap: 20px;
+    border-radius: 20px;
+    background-color: white;
+}
+
+.welcome-container img{
+    width:  250px;
+    height: 250px;
+}
+
+
+.login-btn{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #1570EF;
+    width: 400px;
+    height: 60px;
+    border-radius: 8px;
+    color:white;
+    border-color: #1570EF;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    background-color: #125dc7;
+}
+
+.regis-btn{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: white;
+    width: 400px;
+    height: 60px;
+    border-radius: 8px;
+    cursor: pointer;
+    border-color: grey;
+}
+
+.regis-btn:hover{
+    background-color: rgb(229, 229, 229);
+}
+
