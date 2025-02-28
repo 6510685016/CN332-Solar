@@ -65,12 +65,17 @@ const Dashboard = () => {
     return () => clearInterval(interval); 
   }, []);
 
+  let userName = username
+  if (userName.length > 10) {
+    userName = userName.substring(0, 10) + "...";
+  }
+
   return (
     <div className="body">
       <div className="user-bar">
         <div className="username-info">
           <img src="logo192.png" className="profile-img" alt="profile-picture"/>
-          <h3>{username}</h3>
+          <h3>{userName}</h3>
         </div>
         <button onClick={() => {
           localStorage.clear();
@@ -80,7 +85,7 @@ const Dashboard = () => {
 
       <div className="user-info">
         <div className="hello-user">
-          <h1>Hello, {username}</h1>
+          <h1>Hello, {userName}</h1>
           <h2>System Time: {currentTime} last update....</h2>
         </div>
         <div className="user-activity">
@@ -110,7 +115,7 @@ const Dashboard = () => {
           )}
         </div>
         <div class="no-role">
-        {roles.includes("") && (
+        {roles.length === 0 && (
             <h5>No role has been assigned to you. <a href="www.example.com">Please contact the admin here.</a></h5>
           )}
         </div>
