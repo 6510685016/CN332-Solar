@@ -24,7 +24,7 @@ const LoginPage = () => {
 
   const handleClick = () => {
     const callbackUrl = `${window.location.origin}`;
-    const googleClientId = "800224729905-5alpjot4bgnvr0h8iutaml635ug8q5ui.apps.googleusercontent.com"; // .env
+    const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     const targetUrl = `https://accounts.google.com/o/oauth2/auth?redirect_uri=${encodeURIComponent(
       callbackUrl
     )}&response_type=token&client_id=${googleClientId}&scope=openid%20email%20profile`;

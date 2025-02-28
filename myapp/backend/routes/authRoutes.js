@@ -1,7 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const passport = require("passport");
 const User = require("../models/User");
 const router = express.Router();
 
@@ -47,43 +46,33 @@ router.get("/user", (req, res) => {
   });
 });
 
+// 📌 Google Login
 router.post("/google", async (req, res) => {
-  console.log("1")
   const { accessToken } = req.body;
   const response = await fetch(
     `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
   );
+
   if (!response.ok) return res.status(400).json({ msg: "Fail to fetch user details" });
-  console.log("1")
+
   const data = await response.json();
   const user = await User.findOne({ email: data.email });
+
   if (user) {
     //login
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
     return res.json({ token, user: { roles: user.roles, permissions: user.permissions } });
   }
-  console.log("1")
+
   // register
   const newUser = await User.create({ 
     username: data.name, 
     email: data.email, 
     authProvider: "google",
   });
+
   const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
   res.json({ token, newUser: { roles: newUser.roles, permissions: newUser.permissions } });
 });
-/*
-// 📌 Google Login
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-// 📌 Google Callback
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    res.redirect("/dashboard"); // หลังจาก Login สำเร็จ
-  }
-);
-*/
 
 module.exports = router;
