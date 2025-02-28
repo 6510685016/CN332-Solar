@@ -47,6 +47,31 @@ router.get("/user", (req, res) => {
   });
 });
 
+router.post("/google", async (req, res) => {
+  console.log("1")
+  const { accessToken } = req.body;
+  const response = await fetch(
+    `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
+  );
+  if (!response.ok) return res.status(400).json({ msg: "Fail to fetch user details" });
+  console.log("1")
+  const data = await response.json();
+  const user = await User.findOne({ email: data.email });
+  if (user) {
+    //login
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    return res.json({ token, user: { roles: user.roles, permissions: user.permissions } });
+  }
+  console.log("1")
+  // register
+  const newUser = await User.create({ 
+    username: data.name, 
+    email: data.email, 
+    authProvider: "google",
+  });
+  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  res.json({ token, newUser: { roles: newUser.roles, permissions: newUser.permissions } });
+});
 /*
 // 📌 Google Login
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
 import { useEffect } from "react";
 import axios from 'axios';
 
@@ -9,7 +8,6 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoggedin, setIsLoggedin] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,7 +24,7 @@ const LoginPage = () => {
 
   const handleClick = () => {
     const callbackUrl = `${window.location.origin}`;
-    const googleClientId = "800224729905-5alpjot4bgnvr0h8iutaml635ug8q5ui.apps.googleusercontent.com";
+    const googleClientId = "800224729905-5alpjot4bgnvr0h8iutaml635ug8q5ui.apps.googleusercontent.com"; // .env
     const targetUrl = `https://accounts.google.com/o/oauth2/auth?redirect_uri=${encodeURIComponent(
       callbackUrl
     )}&response_type=token&client_id=${googleClientId}&scope=openid%20email%20profile`;
@@ -34,21 +32,26 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token'); // Get the 'token' parameter from the URL
   
-    if (token) {
-      // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      localStorage.setItem("access_token", token); // ✅ เก็บ JWT ลง localStorage
-      navigate("/secure");
+    if (accessToken) {
+      // User logged in with Google and the access_token is in the URL
+      const loginWithGoogle = async () => {
+        try {
+          const response = await axios.post("http://localhost:5000/auth/google", { accessToken });
+          const { token } = response.data; // Assuming the backend returns a JWT token
+          
+          localStorage.setItem("token", token); // Store the token in localStorage
+          navigate("/dashboard"); // Navigate to the dashboard
+        } catch (error) {
+          setErrorMessage(error.response?.data?.msg || "Login failed"); // Set error message
+        }
+      };
+
+      loginWithGoogle(); // Call the login function
     }
   }, [navigate]);
-
-  useEffect(() => {
-    if (isLoggedin) {
-      navigate("/secure");
-    }
-  }, [isLoggedin, navigate]);
 
   return (
     <div>
