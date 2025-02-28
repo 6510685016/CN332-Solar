@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
+.body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Mitr", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+}
+
+.user-bar{
+    display:flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 1000px;
+    align-items: center;
+}
+
+.hub-btn{
+    height: 45px;
+    width: 95px;
+    border: 2px solid  rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    background-color: blueviolet;
+    color: white;
+    cursor: pointer;
+}
+
+.hub-btn:hover{
+    background-color: rgb(101, 32, 165);
+}
+
+.username-info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:10px
+}
+
+.username-info img{
+    height: 50px;
+    width: 50px;
+    background-color: blueviolet;
+    border: 2px solid  black;
+    border-radius: 100%;
+}
+
+.user-info{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-top:15px;
+    gap: 350px;
+}
+
+.hello-user{
+    height: 160px;
+    width: 415px;
+    
+}
+
+hr{
+    margin-top: 10px;
+    width: 85%;
+}
+
+.user-activity{
+    height: 160px;
+    width: 415px;
+    border: 2px solid  rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.role-select{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    gap: 350px;
+}
+
+.role-interact{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-role{
+    display: flex;
+    justify-content: center;
+}
+
+.cards{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.card-btn {
+    width: 352px;
+    height: 443px;
+    border-radius: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: white;
+    margin-bottom: 10px;
+    cursor: pointer;
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.2); 
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-btn .header img {
+    width: 50px;
+    height: 50px;
+    margin-top: 50px;
+    
+}
+
+.card-btn .ability{
+    margin-top: 50px;
+}
+
+
+.card-btn:hover{
+    background-color: rgb(239, 236, 236);
+}

@@ -42,7 +42,7 @@ router.get("/user", (req, res) => {
     const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    res.json({ roles: user.roles, permissions: user.permissions });
+    res.json({ username: user.username, roles: user.roles, permissions: user.permissions });
   });
 });
 
