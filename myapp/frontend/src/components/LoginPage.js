@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import "./LoginPage.css"
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -41,26 +42,28 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
+    <div className="login-body">
+      <div className="login-container">
       <h2>Login</h2>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
+        <form onSubmit={handleLogin} className="input-form">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {errorMessage && <h5 style={{ color: 'red' }}>{errorMessage}</h5>}
+          <button type="submit">Login</button>
+        </form>
+        
       <button onClick={() => navigate("/register")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
             Don't have an account? Register now
           </button>
@@ -71,6 +74,7 @@ const LoginPage = () => {
         onSuccess={handleGoogleLoginSuccess}
         onError={handleGoogleLoginFailure}
       />
+      </div>
     </div>
   );
 };
