@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const RegisterPage = () => {
-  const [name, setName] = useState("");
+  const [username, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -13,7 +13,7 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/auth/register', { name, email, password });
+      await axios.post('http://localhost:5000/auth/register', { username, email, password });
       navigate("/"); // หลังจากลงทะเบียนสำเร็จให้ไปหน้า login
     } catch (error) {
       setErrorMessage(error.response.data.msg || "Registration failed");
@@ -30,7 +30,7 @@ const RegisterPage = () => {
             <label>Name:</label>
             <input
               type="text"
-              value={name}
+              value={username}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               required

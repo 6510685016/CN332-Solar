@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import Dashboard from "./components/Dashboard";
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />}/>
         <Route path="/register" element={<RegisterPage />}/>
+        <Route path="/dashboard" element={<Dashboard />}/>
       </Routes>
     </Router>
     </GoogleOAuthProvider>

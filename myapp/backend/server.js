@@ -6,6 +6,7 @@ const passport = require("passport");
 const session = require("cookie-session");
 require("./config/passport");
 const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -30,7 +31,6 @@ mongoose
   .catch((err) => console.log(err));
 
 // 📌 Routes
-const authRoutes = require("./routes/authRoutes");
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 
