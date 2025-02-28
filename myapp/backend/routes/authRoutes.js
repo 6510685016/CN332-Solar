@@ -3,14 +3,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const User = require("../models/User");
-const { ROLE, LP, PERMISSIONS } = require('../models/Permission');
-
-
 const router = express.Router();
 
 // 📌 Register
 router.post("/register", async (req, res) => {
-  const { username, email, password , authProvider} = req.body;
+  const { username, email, password } = req.body;
   console.log(req.body);
 
   const existingUser = await User.findOne({ email });
@@ -50,6 +47,7 @@ router.get("/user", (req, res) => {
   });
 });
 
+/*
 // 📌 Google Login
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
@@ -61,5 +59,6 @@ router.get(
     res.redirect("/dashboard"); // หลังจาก Login สำเร็จ
   }
 );
+*/
 
 module.exports = router;
