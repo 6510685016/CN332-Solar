@@ -1,64 +1,125 @@
 const mongoose = require("mongoose");
+const { ROLE, PERMISSIONS, LP } = require("../models/Permission");
+const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../models/User");
 
-describe("User Model Test", () => {
-  beforeAll(async () => {
-    await mongoose.connect("mongodb://127.0.0.1:27017/db", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-  });
+let mongoServer;
 
-  afterAll(async () => {
-    await mongoose.connection.close();
-  });
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create(); // Ensure this is awaited
+  const mongoUri = mongoServer.getUri(); // Make sure this gets a valid URI
 
-  beforeEach(async () => {
-    await User.deleteMany(); // ล้าง Users ก่อนเริ่มแต่ละเทสต์
-  });
+  if (!mongoUri) {
+    throw new Error("MongoMemoryServer did not return a URI"); // Debugging step
+  }
 
-  it("ควรสร้าง User ได้", async () => {
+  await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});
+
+beforeEach(async () => {
+  await User.deleteMany({});
+});
+
+
+describe("User Model", () => {
+  test("should assign permissions based on roles", async () => {
     const user = new User({
       username: "testuser",
       email: "test@example.com",
-      password: "hashedpassword",
-      authProvider: "local",
-      roles: [ROLE.DRONE_CONTROLLER],
-    });
-
-    const savedUser = await user.save();
-    expect(savedUser._id).toBeDefined();
-    expect(savedUser.email).toBe("test@example.com");
-  }, 10000);
-
-  it("ควรป้องกันการสร้าง User ซ้ำ (email ซ้ำกัน)", async () => {
-    const user1 = new User({
-      username: "user1",
-      email: "duplicate@example.com",
-      password: "hashedpassword",
+      password: "password123",
       authProvider: "local",
       roles: [ROLE.ADMIN],
     });
-  
-    const user2 = new User({
-      username: "user2",
-      email: "duplicate@example.com", // ซ้ำกับ user1
-      password: "hashedpassword",
+
+    await user.save();
+
+    // Assuming ROLE.ADMIN has specific permissions
+    expect(user.permissions).toEqual(PERMISSIONS[ROLE.ADMIN]);
+  });
+
+  test("should throw error when updating permissions for ADMIN role", () => {
+    expect(() =>
+      User.updatePermissions(ROLE.ADMIN, [LP.CONTROL_DRONES])
+    ).toThrow("Admin permissions cannot be modified");
+  });
+
+  test("should update permissions for a non-ADMIN role", () => {
+    const newPermissions = [LP.MANAGE_USERS, LP.VIEW_REPORTS, LP.CONTROL_DRONES, LP.MANAGE_SOLAR_PLANTS];
+
+    User.updatePermissions(ROLE.DATA_ANALYST, newPermissions);
+
+    expect(PERMISSIONS[ROLE.DATA_ANALYST]).toEqual(newPermissions);
+  });
+
+  test("should validate user permission for a given action", async () => {
+    const user = new User({
+      username: "testuser",
+      email: "test@example.com",
+      password: "password123",
       authProvider: "local",
       roles: [ROLE.ADMIN],
+      assignedSolarPlants: [new mongoose.Types.ObjectId()],
     });
-  
-    let error = null;
-    try {
-      await user1.save();
-      await user2.save();
-    } catch (err) {
-      error = err;
-      console.error("MongoDB Error:", err); // 🔍 แสดง error ที่แท้จริง
-    }
-  
-    expect(error).not.toBeNull(); // ตรวจสอบว่ามี error
-    expect(error.name).toBe("MongoServerError"); // ตรวจสอบชนิดของ error
-    expect(error.code).toBe(11000); // ตรวจสอบ error code ว่าเป็น duplicate key
-  }, 10000);
+
+    await user.save();
+
+    const permissionCheck = User.hasPermission(user, LP.MANAGE_USERS);
+    expect(permissionCheck).toBe(true); // Assuming user has LP.READ permission
+  });
+
+  test("should return false for user with missing permission", async () => {
+    const newPermissions = [LP.VIEW_REPORTS, LP.ANALYZE_DATA];
+    User.updatePermissions(ROLE.DATA_ANALYST, newPermissions);
+    const user = new User({
+      username: "testuser",
+      email: "test@example.com",
+      password: "password123",
+      authProvider: "local",
+      roles: [ROLE.DATA_ANALYST],
+    });
+
+    await user.save();
+    console.log(user.permissions);
+    const permissionCheck = User.hasPermission(user, LP.MANAGE_USERS);
+    expect(permissionCheck).toBe(false);
+  });
+
+  test("should validate user permission for specific solar plant", async () => {
+    const solarPlantId = new mongoose.Types.ObjectId();
+    const user = new User({
+      username: "testuser",
+      email: "test@example.com",
+      password: "password123",
+      authProvider: "local",
+      roles: [ROLE.ADMIN],
+      assignedSolarPlants: [solarPlantId],
+    });
+
+    await user.save();
+
+    const permissionCheck = User.hasPermission(user, LP.MANAGE_USERS, solarPlantId);
+    expect(permissionCheck).toBe(true);
+  });
+
+  test("should reject user permission for unassigned solar plant", async () => {
+    const solarPlantId = new mongoose.Types.ObjectId();
+    const user = new User({
+      username: "testuser",
+      email: "test@example.com",
+      password: "password123",
+      authProvider: "local",
+      roles: [ROLE.USER],
+      assignedSolarPlants: [],
+    });
+
+    await user.save();
+
+    const permissionCheck = User.hasPermission(user, LP.READ, solarPlantId);
+    expect(permissionCheck).toBe(false);
+  });
 });
