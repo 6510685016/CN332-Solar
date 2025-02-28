@@ -82,6 +82,11 @@ hr{
     align-items: center;
 }
 
+.no-role{
+    display: flex;
+    justify-content: center;
+}
+
 .cards{
     display: flex;
     justify-content: center;
@@ -90,7 +95,7 @@ hr{
 
 .card-btn {
     width: 352px;
-    height: 300px;
+    height: 443px;
     border-radius: 15px;
     border: 1px solid rgba(0, 0, 0, 0.2);
     background-color: white;
@@ -103,11 +108,15 @@ hr{
     align-items: center;
 }
 
-.card-btn img {
+.card-btn .header img {
     width: 50px;
     height: 50px;
-    margin-top: 20px; /* ไม่มีระยะห่าง */
+    margin-top: 50px;
     
+}
+
+.card-btn .ability{
+    margin-top: 50px;
 }
 
 
