@@ -4,7 +4,7 @@ import axios from "axios";
 import "./UserManage.css";
 import logo from "../logo.svg";
 
-const Dashboard = () => {
+const UserManage = () => {
     const [users] = useState([
         { id: 1, name: "Adum Papaya Salad", role: "(3) Admin , Drone C. , Data A" }
     ]);
@@ -18,7 +18,7 @@ const Dashboard = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
-            navigate("/");
+            navigate("/login");
         } else {
             axios.get("http://localhost:5000/auth/user", {
                 headers: { Authorization: `Bearer ${token}` }
@@ -28,7 +28,7 @@ const Dashboard = () => {
                     setPermissions(response.data.permissions);
                     setProfile({ name: response.data.name, picture: response.data.picture });
                 })
-                .catch(() => navigate("/"));
+                .catch(() => navigate("/login"));
         }
     }, [navigate]);
 
@@ -45,7 +45,7 @@ const Dashboard = () => {
         <div className="dashboard-container">
             <button className="back-button" onClick={() => {
                 localStorage.clear();
-                navigate("/");
+                navigate("/dashboard");
             }}>⬅ Back</button>
 
             <div className="profile-section">
@@ -95,4 +95,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default UserManage;

@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import Dashboard from "./components/Dashboard";
-import WelcomePage from "./components/WelcomePage.js"
+import WelcomePage from "./components/WelcomePage";
 import UserManage from "./components/UserManage";
 import SolarPlantManage from "./components/SolarPlantManage";
 import CreateSolarPlant from "./components/CreateSolarPlant";
