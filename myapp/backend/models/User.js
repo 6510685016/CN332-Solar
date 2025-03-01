@@ -23,6 +23,7 @@ UserSchema.pre('save', function (next) {
   next();
 });
 
+/*
 // สร้าง static method สำหรับการแก้ไข Permissions 
 UserSchema.statics.updatePermissions = function (role, newPermissions) {
   if (role === ROLE.ADMIN) {
@@ -33,6 +34,7 @@ UserSchema.statics.updatePermissions = function (role, newPermissions) {
   }
   PERMISSIONS[role] = newPermissions;
 };
+*/
 
 // สร้าง static method สำหรับการตรวจสอบสิทธิ์ของ User
 UserSchema.statics.hasPermission = function (user, permission, solarPlantId = null) {
@@ -46,4 +48,4 @@ UserSchema.statics.hasPermission = function (user, permission, solarPlantId = nu
 };
 
 const User = mongoose.model("User", UserSchema);
-module.exports = { User, ROLE };
+module.exports = User;
