@@ -1,130 +1,146 @@
-@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
-.body{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Mitr", sans-serif;
-    font-weight: 200;
-    font-style: normal;
-    
+.user-manage-container {
+    width: 90%;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    text-align: center;
 }
 
-.user-bar{
-    display:flex;
-    justify-content: center;
-    margin-top: 10px;
-    gap: 1000px;
-    align-items: center;
-}
-
-.hub-btn{
-    height: 45px;
-    width: 95px;
-    border: 2px solid  rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    background-color: blueviolet;
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #6c63ff;
     color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
-.hub-btn:hover{
-    background-color: rgb(101, 32, 165);
-}
-
-.username-info{
+.profile-section {
+    position: absolute;
+    top: 20px;
+    right: 20px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap:10px
+    gap: 10px;
 }
 
-.username-info img{
-    height: 50px;
-    width: 50px;
-    background-color: blueviolet;
-    border: 2px solid  black;
-    border-radius: 100%;
+.profile-name {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: right;
 }
 
-.user-info{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    margin-top:15px;
-    gap: 350px;
+.profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-.hello-user{
-    height: 160px;
-    width: 415px;
-    
+.user-manage-title {
+    margin-top: 80px;
+    text-align: center;
 }
 
-hr{
-    margin-top: 10px;
-    width: 85%;
-}
-
-.user-activity{
-    height: 160px;
-    width: 415px;
-    border: 2px solid  rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
+.search-bar {
+    width: 50%;
     padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-.role-select{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    gap: 350px;
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
-.role-interact{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.user-table th,
+.user-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
 }
 
-.no-role{
-    display: flex;
-    justify-content: center;
+.user-table th {
+    background-color: #f4f4f4;
 }
 
-.cards{
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.card-btn {
-    width: 352px;
-    height: 443px;
-    border-radius: 15px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: white;
-    margin-bottom: 10px;
+.view-logs,
+.edit-plant,
+.edit-role,
+.delete-user {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.2); 
-    box-sizing: border-box;
+    margin: 2px;
+}
+
+.view-logs {
+    background-color: #6c63ff;
+    color: white;
+}
+
+.edit-plant {
+    background-color: #4caf50;
+    color: white;
+}
+
+.edit-role {
+    background-color: #ff9800;
+    color: white;
+}
+
+.delete-user {
+    background-color: #f44336;
+    color: white;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
-.card-btn .header img {
-    width: 50px;
-    height: 50px;
-    margin-top: 50px;
-    
+.modal {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
 }
 
-.card-btn .ability{
-    margin-top: 50px;
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
 }
 
+.cancel-button {
+    background-color: gray;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-.card-btn:hover{
-    background-color: rgb(239, 236, 236);
+.confirm-button {
+    background-color: #6c63ff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
