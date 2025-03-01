@@ -24,7 +24,7 @@ const LoginPage = () => {
   };
 
   const handleClick = () => {
-    const callbackUrl = `${window.location.origin}`;
+    const callbackUrl = `${window.location.origin}/login`;
     const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     const targetUrl = `https://accounts.google.com/o/oauth2/auth?redirect_uri=${encodeURIComponent(
       callbackUrl
@@ -76,7 +76,6 @@ const LoginPage = () => {
           {errorMessage && <h5 style={{ color: 'red' }}>{errorMessage}</h5>}
           <button type="submit">Login</button>
         </form>
-        
       <button onClick={() => navigate("/register")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
             Don't have an account? Register now
           </button>
@@ -113,6 +112,7 @@ const LoginPage = () => {
               />
             </svg>
       </button>
+      </div>
     </div>
   );
 };
