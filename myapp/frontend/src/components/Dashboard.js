@@ -14,7 +14,7 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/"); 
+      navigate("/login"); 
     } else {
       axios.get("http://localhost:5000/auth/user", {
         headers: { Authorization: `Bearer ${token}` }
@@ -36,7 +36,7 @@ const Dashboard = () => {
       })
       .catch(error => {
         console.error("Error:", error);
-        navigate("/");  
+        navigate("/login");  
       });
     }
   }, [navigate]);
@@ -79,7 +79,7 @@ const Dashboard = () => {
         </div>
         <button onClick={() => {
           localStorage.clear();
-          navigate("/");
+          navigate("/login");
         }} className="hub-btn">Logout</button>
       </div>
 
