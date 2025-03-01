@@ -142,4 +142,4 @@ const UserManage = () => {
     );
 };
 
-export default Dashboard;
+export default UserManage;
