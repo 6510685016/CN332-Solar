@@ -21,7 +21,7 @@ const UserManage = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
-            navigate("/");
+            navigate("/login");
         } else {
             axios.get("http://localhost:5000/auth/user", {
                 headers: { Authorization: `Bearer ${token}` }
@@ -30,7 +30,7 @@ const UserManage = () => {
                     setRoles(response.data.roles);
                     setPermissions(response.data.permissions);
                 })
-                .catch(() => navigate("/"));
+                .catch(() => navigate("/login"));
         }
     }, [navigate]);
 
@@ -50,7 +50,7 @@ const UserManage = () => {
         <div className="user-manage-container">
             <button className="back-button" onClick={() => {
                 localStorage.clear();
-                navigate("/");
+                navigate("/dashboard");
             }}>⬅ Back</button>
 
             <div className="profile-section">
@@ -142,4 +142,4 @@ const UserManage = () => {
     );
 };
 
-export default UserManage;
+export default Dashboard;
