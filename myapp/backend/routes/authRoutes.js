@@ -29,7 +29,7 @@ router.post("/login", async (req, res) => {
   if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-  res.json({ token, user: { roles: user.roles, permissions: user.permissions } });
+  res.json({ token });
 });
 
 router.get("/user", (req, res) => {
@@ -41,13 +41,14 @@ router.get("/user", (req, res) => {
 
     const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ msg: "User not found" });
-
+    console.log("response success")
     res.json({ username: user.username, roles: user.roles, permissions: user.permissions });
   });
 });
 
 // 📌 Google Login
 router.post("/google", async (req, res) => {
+  console.log("response success someone login google")
   const { accessToken } = req.body;
   const response = await fetch(
     `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
@@ -61,7 +62,7 @@ router.post("/google", async (req, res) => {
   if (user) {
     //login
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    return res.json({ token, user: { roles: user.roles, permissions: user.permissions } });
+    return res.json({ token });
   }
 
   // register
@@ -72,7 +73,7 @@ router.post("/google", async (req, res) => {
   });
 
   const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-  res.json({ token, newUser: { roles: newUser.roles, permissions: newUser.permissions } });
+  res.json({ token });
 });
 
 module.exports = router;
