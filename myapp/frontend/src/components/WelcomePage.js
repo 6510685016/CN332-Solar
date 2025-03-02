@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./WelcomePage.css";
 
 const WelcomePage = () => {
+  
   const navigate = useNavigate(); 
   const handleLoginClick = () => {
     navigate("/login"); 
@@ -11,6 +12,7 @@ const WelcomePage = () => {
   const handleRegisterClick = () => {
     navigate("/register"); 
   };
+
   return (
     <div className="welcome-body"> 
       <div className="welcome-container">

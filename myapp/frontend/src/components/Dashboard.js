@@ -16,11 +16,10 @@ const Dashboard = () => {
     if (!token) {
       navigate("/login"); 
     } else {
-      axios.get("http://localhost:5000/auth/user", {
+      axios.get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => {
-        console.log("API response:", response.data);
         setUsername(response.data.username);
         setRoles(response.data.roles);
         setPermissions(response.data.permissions);

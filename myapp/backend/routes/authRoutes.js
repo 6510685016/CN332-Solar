@@ -3,11 +3,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const router = express.Router();
+const { jwtDecode } = require('jwt-decode')
 
 // 📌 Register
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-  console.log(req.body);
 
   const existingUser = await User.findOne({ email });
   if (existingUser) return res.status(400).json({ msg: "Email already exists" });
@@ -47,32 +47,23 @@ router.get("/user", (req, res) => {
 });
 
 // 📌 Google Login
-router.post("/google", async (req, res) => {
-  console.log("response success someone login google")
-  const { accessToken } = req.body;
-  const response = await fetch(
-    `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
-  );
+router.post('/google', async (req, res) => {
+  // Generate JWT token
+  const { credential } = req.body.credential;
+  const decoded = jwtDecode(credential);
+  const useremail = decoded.email;
+  const user = await User.findOne({email: useremail});
 
-  if (!response.ok) return res.status(400).json({ msg: "Fail to fetch user details" });
+  if (!user) {
+    newuser = await User.create({
+      username: decoded.name,
+      email: decoded.email,
+      authProvider: "google"
+    });
+    user = newuser;
+  };
 
-  const data = await response.json();
-  const user = await User.findOne({ email: data.email });
-
-  if (user) {
-    //login
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    return res.json({ token });
-  }
-
-  // register
-  const newUser = await User.create({ 
-    username: data.name, 
-    email: data.email, 
-    authProvider: "google",
-  });
-
-  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
   res.json({ token });
 });
 

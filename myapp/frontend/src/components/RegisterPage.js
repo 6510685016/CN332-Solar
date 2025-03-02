@@ -13,7 +13,7 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/auth/register', { username, email, password });
+      await axios.post(`${process.env.REACT_APP_BACKEND}/auth/register`, { username, email, password });
       navigate("/"); // หลังจากลงทะเบียนสำเร็จให้ไปหน้า login
     } catch (error) {
       setErrorMessage(error.response.data.msg || "Registration failed");

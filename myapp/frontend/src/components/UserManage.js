@@ -21,7 +21,7 @@ const UserManage = () => {
         if (!token) {
             navigate("/login");
         } else {
-            axios.get("http://localhost:5000/auth/user", {
+            axios.get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             .then(response => {
@@ -36,7 +36,7 @@ const UserManage = () => {
         }
     
         // Fetch users from database
-        axios.get("http://localhost:5000/users")
+        axios.get(`${process.env.REACT_APP_BACKEND}/users`)
             .then(response => {
                 setUsers(response.data);  // ✅ Store real users in state
             })
@@ -68,7 +68,7 @@ const UserManage = () => {
         if (!selectedUser) return;
 
         try {
-            const response = await axios.put("http://localhost:5000/users/update-role", {
+            const response = await axios.put(`${process.env.REACT_APP_BACKEND}/users/update-role`, {
                 userId: selectedUser._id,
                 newRole: selectedRoles
             });
@@ -88,7 +88,7 @@ const UserManage = () => {
         if (!selectedUser) return;
 
         try {
-            const response = await axios.delete(`http://localhost:5000/users/delete/${selectedUser._id}`);
+            const response = await axios.delete(`${process.env.REACT_APP_BACKEND}/users/delete/${selectedUser._id}`);
             alert(response.data.message);
             setUsers(users.filter(user => user._id !== selectedUser._id));
             closeModal();
