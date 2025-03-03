@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 // สร้าง Schema สำหรับ User
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true, sparse: true},
+  username: { type: String, required: true, sparse: true},
   email: { type: String, required: true, unique: true },
   password: { type: String }, // ต้องเข้ารหัสก่อนบันทึก
   authProvider: { type: String, enum: ['local', 'google'], required: true },

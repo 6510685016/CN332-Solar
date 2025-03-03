@@ -52,15 +52,14 @@ router.post('/google', async (req, res) => {
   const { credential } = req.body.credential;
   const decoded = jwtDecode(credential);
   const useremail = decoded.email;
-  const user = await User.findOne({email: useremail});
+  let user = await User.findOne({email: useremail});
 
   if (!user) {
-    newuser = await User.create({
+    user = await User.create({
       username: decoded.name,
       email: decoded.email,
       authProvider: "google"
     });
-    user = newuser;
   };
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
