@@ -1,26 +1,76 @@
-const mongoose = require("mongoose");
+class HasPermission {
+  static hasPermission(permission) {
+    throw new Error("Method 'hasPermission()' must be implemented.");
+  }
+}
 
-const ROLE = {
-    ADMIN: 'admin',
-    DRONE_CONTROLLER: 'dc',
-    DATA_ANALYST: 'da'
-};
+class HasFeature extends HasPermission {
+  static hasPermission(permission, feature) {
+    return permission.features.includes(feature);
+  }
+}
 
-// list ของ permissions ที่ระบบรองรับ
-const LP = {
-  MANAGE_USERS: 'manage_users',
-  VIEW_REPORTS: 'view_reports',
-  CONTROL_DRONES: 'control_drones',
-  MANAGE_SOLAR_PLANTS: 'manage_solar_plants',
-  VIEW_SOLAR_PLANTS: 'view_solar_plants',
-  ANALYZE_DATA: 'analyze_data'
-};
+//Permission
+class Permission {
+  constructor() {
+    this.role,
+    this.features = [];
+  }
 
-// กำหนดสิทธิ์ของแต่ละ Role
-const PERMISSIONS = {
-  [ROLE.ADMIN]: [LP.MANAGE_USERS, LP.VIEW_REPORTS, LP.CONTROL_DRONES, LP.MANAGE_SOLAR_PLANTS],
-  [ROLE.DRONE_CONTROLLER]: [LP.CONTROL_DRONES, LP.VIEW_SOLAR_PLANTS],
-  [ROLE.DATA_ANALYST]: [LP.VIEW_REPORTS, LP.ANALYZE_DATA]
-};
+  setPermission(features) {
+    this.features = features;
+  }
+}
 
-module.exports = { ROLE, LP, PERMISSIONS };
+// Init
+// User Management Class
+userManage = new Permission(
+  "userManage",
+  [
+    "delete user",
+    "edit role",
+    "assign solar plant",
+    "get user role"
+  ]
+)
+
+// Fetch Data Class
+fetchData = new Permission(
+  "fetchData",
+  [
+    "user api",
+    "get result"
+  ]
+)
+
+// Task Management Class
+taskManage = new Permission(
+  "taskManage",
+  [
+    "task create",
+    "task edit",
+    "get result"
+  ]
+)
+
+// Solar Plant Management Class
+solarPlantManage = new Permission(
+  "solarPlantManage",
+  [
+    "manage solar plant",
+    "manage zone",
+    "get solar plant"
+  ]
+)
+
+// Maintenance Class
+maintenance = new Permission(
+  "maintenance",
+  [
+    "maintenance"
+  ]
+)
+
+permissionList = { "userManage" : userManage, "fetchData" : fetchData, "taskManage" : taskManage, "solarPlantManage" : solarPlantManage, "maintenance" : maintenance};
+module.exports = {permissionList, Permission, HasFeature};
+
