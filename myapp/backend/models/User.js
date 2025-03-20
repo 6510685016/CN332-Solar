@@ -54,23 +54,14 @@ UserSchema.methods.hasFeature = async function (feature, solarPlantId = null) {
         return true;
       }
     });
-    return false;
   }
   return false;
 };
 
-/*
-UserSchema.statics.hasFeature = function (user, feature, solarPlantId = null) {
-  if (!solarPlantId || (solarPlantId && user.assignedSolarPlants.some(id => id.toString() === solarPlantId.toString()))) {
-    user.roles.forEach(roleName => {
-      if (roleMapping[roleName].hasFeature(feature)) {
-        return true;
-      }
-    });
-  }
-  return false;
+UserSchema.methods.setRole = async function (roles) {
+  this.roles = roles;
+  this.save();
 };
-*/
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;

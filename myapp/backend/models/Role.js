@@ -1,5 +1,4 @@
 const { Permission } = require('./Permission');
-
 const mongoose = require('mongoose');
 
 const RoleSchema = new mongoose.Schema({
@@ -17,15 +16,10 @@ RoleSchema.methods.hasFeature = function (feature) {
     return false;
 };
 
-/*
-RoleSchema.statics.upsertRole = async function (roleName, permissions) {
-  return this.findOneAndUpdate(
-    { name: roleName },
-    { $set: { permissions } },
-    { upsert: true, new: true }
-  );
+RoleSchema.methods.setPermissions = function (permissions) {
+  this.permissions = permissions;
+  this.save();
 };
-*/
 
 const Role = mongoose.model('Role', RoleSchema);
 module.exports = Role;
