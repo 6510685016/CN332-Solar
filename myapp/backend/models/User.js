@@ -1,6 +1,7 @@
 const {Role} = require('./Role');
 const { LogSchema } = require('./Log');
 const mongoose = require("mongoose");
+const { reject } = require('firebase-tools/lib/utils');
 
 /*
 const roleMapping = { 
@@ -45,11 +46,15 @@ UserSchema.statics.updatePermissions = function (role, newPermissions) {
 */
 
 // สร้าง static method สำหรับการตรวจสอบสิทธิ์ของ User
-UserSchema.statics.hasFeature = async function (user, feature, solarPlantId = null) {
-  if (!solarPlantId || (solarPlantId && user.assignedSolarPlants.some(id => id.toString() === solarPlantId.toString()))) {
+UserSchema.methods.hasFeature = async function (feature, solarPlantId = null) {
+  if (!solarPlantId || (solarPlantId && this.assignedSolarPlants.some(id => id.toString() === solarPlantId.toString()))) {
     // roles ทั้งหมดที่ user มีประกอบด้วย feature ไหม
-    const roles = await Role.find({ name: { $in: user.roles } }).populate('permissions');
-    return roles.some(role => role.hasFeature(feature));
+    this.roles.forEach(role => {
+      if (role.hasFeature(feature)) {
+        return true;
+      }
+    });
+    return false;
   }
   return false;
 };

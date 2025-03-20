@@ -5,8 +5,8 @@ const PermissionSchema = new mongoose.Schema({
   features: [{ type: String, required: true }]
 });
 
-PermissionSchema.statics.hasFeature = async function (feature) {
-  return this.permission.features.includes(feature);
+PermissionSchema.method.hasFeature = async function (feature) {
+  return this.features.includes(feature);
 };
 
 const Permission = mongoose.model('Permission', PermissionSchema);

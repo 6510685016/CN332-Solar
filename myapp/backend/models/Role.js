@@ -9,7 +9,7 @@ const RoleSchema = new mongoose.Schema({
 
 RoleSchema.methods.hasFeature = function (feature) {
     this.permissions.forEach(permission => {
-      result = permission.hasFeature(permission, feature);
+      result = permission.hasFeature(feature);
       if (result) {
         return true;
       }
