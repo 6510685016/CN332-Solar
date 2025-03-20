@@ -1,7 +1,8 @@
-const {Role, superAdmin, admin, analyst, droneController, maintenancer} = require('./Role');
+const {Role} = require('./Role');
 const { LogSchema } = require('./Log');
 const mongoose = require("mongoose");
 
+/*
 const roleMapping = { 
   "superAdmin": superAdmin, 
   "admin": admin, 
@@ -9,18 +10,19 @@ const roleMapping = {
   "droneController": droneController, 
   "maintenancer": maintenancer
 };
+*/
 
 // สร้าง Schema สำหรับ User
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, sparse: true},
   email: { type: String, required: true, unique: true },
-  password: { type: String }, // ต้องเข้ารหัสก่อนบันทึก
+  password: { type: String }, // Encode
   authProvider: { type: String, enum: ['local', 'google'], required: true },
-  roles: [{ type: String }], // รองรับหลาย Role
-  logs: [LogSchema],
+  roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }],
+  logs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Log' }],
   assignedSolarPlants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SolarPlant' }]
 }, {
-  timestamps: true // สร้าง fields createdAt และ updatedAt
+  timestamps: true // createdAt, updatedAt
 });
 
 // สรุป permissions ของ User จาก roles ที่กำหนด โดยใช้ middleware
@@ -43,6 +45,16 @@ UserSchema.statics.updatePermissions = function (role, newPermissions) {
 */
 
 // สร้าง static method สำหรับการตรวจสอบสิทธิ์ของ User
+UserSchema.statics.hasFeature = async function (user, feature, solarPlantId = null) {
+  if (!solarPlantId || (solarPlantId && user.assignedSolarPlants.some(id => id.toString() === solarPlantId.toString()))) {
+    // roles ทั้งหมดที่ user มีประกอบด้วย feature ไหม
+    const roles = await Role.find({ name: { $in: user.roles } }).populate('permissions');
+    return roles.some(role => role.hasFeature(feature));
+  }
+  return false;
+};
+
+/*
 UserSchema.statics.hasFeature = function (user, feature, solarPlantId = null) {
   if (!solarPlantId || (solarPlantId && user.assignedSolarPlants.some(id => id.toString() === solarPlantId.toString()))) {
     user.roles.forEach(roleName => {
@@ -53,6 +65,7 @@ UserSchema.statics.hasFeature = function (user, feature, solarPlantId = null) {
   }
   return false;
 };
+*/
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;

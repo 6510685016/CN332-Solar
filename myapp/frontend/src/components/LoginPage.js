@@ -67,7 +67,7 @@ const LoginPage = () => {
             handleGoogleLogin(credential);
             console.log(credential);
           }}
-          onError={() => {
+          onError={ error => {
             setErrorMessage(error.response?.data?.msg || "Login failed");
           }}
         />

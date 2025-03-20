@@ -1,70 +1,31 @@
-const { permissionList, Permission, HasFeature } = require('./Permission');
+const { Permission } = require('./Permission');
 
-userManage = permissionList["userManage"];
-fetchData = permissionList["fetchData"];
-taskManage = permissionList["taskManage"];
-solarPlantManage = permissionList["solarPlantManage"]
-maintenance = permissionList["maintenance"]
+const mongoose = require('mongoose');
 
-class Role {
-  constructor(name, permissions) {
-    this.name;
-    this.permissions = [];
-  }
+const RoleSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  permissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Permission' }]
+}, { timestamps: true });
 
-  setPermission(permissions) {
-    this.permissions = permissions;
-  }
-
-  hasFeature(feature) {
+RoleSchema.methods.hasFeature = function (feature) {
     this.permissions.forEach(permission => {
-      result = HasFeature.hasPermission(permission, feature);
+      result = permission.hasFeature(permission, feature);
       if (result) {
         return true;
       }
     });
     return false;
-  }
-}
+};
 
-superAdmin = new Role(
-  "SuperAdmin",
-  [
-    userManage,
-    fetchData,
-    taskManage,
-    solarPlantManage,
-    maintenance
-  ]
-)
+/*
+RoleSchema.statics.upsertRole = async function (roleName, permissions) {
+  return this.findOneAndUpdate(
+    { name: roleName },
+    { $set: { permissions } },
+    { upsert: true, new: true }
+  );
+};
+*/
 
-admin = new Role(
-  "Admin",
-  [
-    userManage,
-    solarPlantManage,
-  ]
-)
-
-analyst = new Role(
-  "Analyst",
-  [
-    fetchData,
-  ]
-)
-  
-droneController = new Role(
-  "DroneController",
-  [
-    taskManage,
-  ]
-)
-
-maintenancer = new Role(
-  "Maintenancer",
-  [
-    maintenance
-  ]
-)
-
-module.exports = {Role, superAdmin, admin, analyst, droneController, maintenancer};
+const Role = mongoose.model('Role', RoleSchema);
+module.exports = Role;
