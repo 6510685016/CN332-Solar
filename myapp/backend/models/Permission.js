@@ -9,5 +9,10 @@ PermissionSchema.methods.hasFeature = async function (feature) {
   return this.features.includes(feature);
 };
 
+PermissionSchema.methods.setFeature = async function (features) {
+  this.features = features;
+  this.save();
+};
+
 const Permission = mongoose.model('Permission', PermissionSchema);
 module.exports = Permission;
