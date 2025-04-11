@@ -1,4 +1,4 @@
-const {Role} = require('./Role');
+const { Role } = require('./Role');
 const { LogSchema } = require('./Log');
 const mongoose = require("mongoose");
 const { reject } = require('firebase-tools/lib/utils');
@@ -15,7 +15,7 @@ const roleMapping = {
 
 // สร้าง Schema สำหรับ User
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, sparse: true},
+  username: { type: String, required: true, sparse: true },
   email: { type: String, required: true, unique: true },
   password: { type: String }, // Encode
   authProvider: { type: String, enum: ['local', 'google'], required: true },

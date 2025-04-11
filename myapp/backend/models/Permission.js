@@ -5,7 +5,7 @@ const PermissionSchema = new mongoose.Schema({
   features: [{ type: String, required: true }]
 });
 
-PermissionSchema.method.hasFeature = async function (feature) {
+PermissionSchema.methods.hasFeature = async function (feature) {
   return this.features.includes(feature);
 };
 
