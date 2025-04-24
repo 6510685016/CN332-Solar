@@ -2,11 +2,13 @@ require("dotenv").config();
 const mongoose = require('mongoose');
 const Permission = require('../models/Permission');
 const Role = require('../models/Role');
+const User = require('../models/User'); // นำเข้าโมเดล User
+const bcrypt = require("bcryptjs");
 
 // เชื่อมต่อกับ MongoDB
-mongoose.connect(process.env.MONGO_URI, { 
-  useNewUrlParser: true, 
-  useUnifiedTopology: true 
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 });
 
 // ฟังก์ชันเพิ่มข้อมูล Permission
@@ -38,22 +40,22 @@ async function seedRoles() {
   }, {});
 
   const roles = [
-    { 
-      name: 'SuperAdmin', 
+    {
+      name: 'SuperAdmin',
       permissions: [
         permissionMap.userManage,
         permissionMap.fetchData,
         permissionMap.taskManage,
         permissionMap.solarPlantManage,
         permissionMap.maintenance
-      ] 
+      ]
     },
-    { 
-      name: 'Admin', 
+    {
+      name: 'Admin',
       permissions: [
         permissionMap.userManage,
         permissionMap.solarPlantManage
-      ] 
+      ]
     },
     { name: 'Analyst', permissions: [permissionMap.fetchData] },
     { name: 'DroneController', permissions: [permissionMap.taskManage] },
@@ -69,11 +71,35 @@ async function seedRoles() {
   }
 }
 
+// ฟังก์ชันสำหรับสร้างผู้ใช้ทดสอบ
+async function seedTestUser() {
+  const role = await Role.find();
+
+  const roleMap = role.reduce((acc, perm) => {
+    acc[perm.name] = perm._id;
+    return acc;
+  }, {});
+  const userExists = await User.findOne({ email: 'test@example.com' });
+  if (!userExists) {
+    const testUser = new User({
+      username: 'testuser',
+      email: 'test@example.com',
+      password: await bcrypt.hash("hashedpassword", 10), // ในแอปพลิเคชันจริง รหัสผ่านนี้จะต้องถูกแฮช
+      authProvider: 'local',
+      roles: [roleMap.SuperAdmin] // คุณอาจต้องการกำหนดบทบาทที่นี่ หรือปล่อยว่างไว้
+    });
+    await testUser.save();
+    // await testUser.setRole([roleMap.SuperAdmin]);
+    console.log('Created test user: testuser');
+  }
+}
+
 // เรียกใช้ทั้งสองฟังก์ชัน
 async function seedDatabase() {
   try {
     await seedPermissions();
     await seedRoles();
+    await seedTestUser(); // เพิ่มบรรทัดนี้
     console.log('Database seeding completed successfully!');
     mongoose.connection.close();
   } catch (error) {

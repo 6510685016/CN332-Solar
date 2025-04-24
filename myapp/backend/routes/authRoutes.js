@@ -32,19 +32,43 @@ router.post("/login", async (req, res) => {
   res.json({ token });
 });
 
-router.get("/user", (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1]; // Get token from header
+router.get("/user", async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ msg: "Unauthorized" });
 
-  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => { // เพิ่ม async ตรงนี้
     if (err) return res.status(403).json({ msg: "Forbidden" });
 
-    const user = await User.findById(decoded.id);
-    if (!user) return res.status(404).json({ msg: "User not found" });
-    console.log("response success")
-    res.json({ username: user.username, roles: user.roles, permissions: user.permissions });
+    try {
+      const user = await User.findById(decoded.id).populate({ // populate roles and permissions
+        path: 'roles',
+        populate: {  // populate permissions inside roles
+          path: 'permissions',
+          model: 'Permission' // Specify the model name
+        }
+      });
+
+      if (!user) return res.status(404).json({ msg: "User not found" });
+      console.log("response success");
+
+      const roleNames = [];
+      const permissionNames = [];
+
+      for (const role of user.roles) { // Use for...of for iterating arrays
+        roleNames.push(role.name);
+        for (const permission of role.permissions) {
+          permissionNames.push(permission.name);
+        }
+      }
+      console.log({ username: user.username, roles: roleNames, permissions: permissionNames });
+      res.json({ username: user.username, roles: roleNames, permissions: permissionNames });
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      res.status(500).json({ msg: "Internal server error" }); // เพิ่ม error handling
+    }
   });
 });
+
 
 // 📌 Google Login
 router.post('/google', async (req, res) => {
