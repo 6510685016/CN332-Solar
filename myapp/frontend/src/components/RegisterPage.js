@@ -17,6 +17,8 @@ const RegisterPage = () => {
       navigate("/"); // หลังจากลงทะเบียนสำเร็จให้ไปหน้า login
     } catch (error) {
       setErrorMessage(error.response.data.msg || "Registration failed");
+      console.log("Backend URL:", process.env.REACT_APP_BACKEND);
+
     }
   };
 
