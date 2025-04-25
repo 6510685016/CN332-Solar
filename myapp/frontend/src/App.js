@@ -20,6 +20,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/usermanage" element={<UserManage />} />
+
           <Route path="/solarplantmanage" element={<SolarPlantManage />} />
           <Route path="/createsolarplant" element={<CreateSolarPlant />} />
           <Route path="/createzone" element={<CreateZone />} />

@@ -18,8 +18,7 @@ const Dashboard = () => {
     if (!token) {
       navigate("/login");
     } else {
-      axios
-        .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
+      axios.get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
@@ -109,7 +108,7 @@ const Dashboard = () => {
       <div className="manage-panel">
         <div className="role-select">
           <h1>Management Panel</h1>
-          {roles.includes("admin") && (
+          {roles.includes("Admin") && (
             <button
               onClick={() => handleRoleClick("admin")}
               className="hub-btn"
@@ -117,12 +116,12 @@ const Dashboard = () => {
               Administrator
             </button>
           )}
-          {roles.includes("dc") && (
+          {roles.includes("DroneController") && (
             <button onClick={() => handleRoleClick("dc")} className="hub-btn">
               Drone Controller
             </button>
           )}
-          {roles.includes("da") && (
+          {roles.includes("Analyst") && (
             <button onClick={() => handleRoleClick("da")} className="hub-btn">
               Data Analyst
             </button>
@@ -159,7 +158,7 @@ const Dashboard = () => {
             <>
               <div className="cards">
                 {hasPermission("userManage") && (
-                  <button className="card-btn">
+                  <button className="card-btn" onClick={() => navigate("/usermanage")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
                     <div className="header">
                       <img src="logo192.png" alt="User Manage Dashboard Pic" />
                       <h2>User Manage Dashboard</h2>
@@ -167,7 +166,6 @@ const Dashboard = () => {
                     <div className="ability">
                       <h3>Assign Roles</h3>
                       <h3>Manage Users</h3>
-                      <h3>View Logs</h3>
                     </div>
                   </button>
                 )}

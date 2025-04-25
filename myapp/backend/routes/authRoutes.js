@@ -21,13 +21,10 @@ router.post("/register", async (req, res) => {
 // 📌 Login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   const user = await User.findOne({ email });
   if (!user) return res.status(400).json({ msg: "User not found" });
-
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
-
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
   res.json({ token });
 });
@@ -49,7 +46,6 @@ router.get("/user", async (req, res) => {
       });
 
       if (!user) return res.status(404).json({ msg: "User not found" });
-      console.log("response success");
 
       const roleNames = [];
       const permissionNames = [];
@@ -60,7 +56,6 @@ router.get("/user", async (req, res) => {
           permissionNames.push(permission.name);
         }
       }
-      console.log({ username: user.username, roles: roleNames, permissions: permissionNames });
       res.json({ username: user.username, roles: roleNames, permissions: permissionNames });
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -69,6 +64,21 @@ router.get("/user", async (req, res) => {
   });
 });
 
+router.get('/userboard', async (req, res) => {
+  try {
+    const userlist = await User.find({}, 'username roles').populate('roles', 'name'); // ดึงข้อมูลผู้ใช้ทั้งหมดจากฐานข้อมูล
+    const simplifiedUsers = userlist.map(user => ({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      roles: user.roles.map(roles => roles.name), // ดึงชื่อ role ออกมา
+    }));
+    res.json({users : simplifiedUsers});
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Failed to retrieve users", error: error }); // ส่งข้อผิดพลาดกลับ
+  }
+});
 
 // 📌 Google Login
 router.post('/google', async (req, res) => {
