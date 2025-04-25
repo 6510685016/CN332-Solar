@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const router = express.Router();
 const { jwtDecode } = require('jwt-decode')
+const Task = require("../models/Task");
 
 // 📌 Register
 router.post("/register", async (req, res) => {
@@ -98,6 +99,25 @@ router.post('/google', async (req, res) => {
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
   res.json({ token });
+});
+
+router.post("/tasks", async (req, res) => {
+  const { taskName, solarPlantId, zone } = req.body;
+
+  try {
+    const task = new Task({
+      taskName,
+      solarPlantId: solarPlantId || null,  // ถ้าไม่มีข้อมูล solarPlantId ให้เป็น null
+      zone: zone || null,  // ถ้าไม่มีข้อมูล zone ให้เป็น null
+      status: "pending",   // ค่าเริ่มต้นเป็น pending
+      createdAt: new Date(),
+    });
+
+    await task.save();
+    res.status(201).json({ message: "Task created successfully", task });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating task", error });
+  }
 });
 
 module.exports = router;
