@@ -101,15 +101,14 @@ router.post('/google', async (req, res) => {
   res.json({ token });
 });
 
+//สร้างใหม่
 router.post("/tasks", async (req, res) => {
-  const { taskName, solarPlantId, zone } = req.body;
+  const { taskId } = req.body; // รับ taskId ที่ส่งมา
 
   try {
     const task = new Task({
-      taskName,
-      solarPlantId: solarPlantId || null,  // ถ้าไม่มีข้อมูล solarPlantId ให้เป็น null
-      zone: zone || null,  // ถ้าไม่มีข้อมูล zone ให้เป็น null
-      status: "pending",   // ค่าเริ่มต้นเป็น pending
+      taskId, // ใช้ taskId ที่ส่งมา
+      status: "Created", // สถานะเริ่มต้นเป็น pending
       createdAt: new Date(),
     });
 
@@ -119,5 +118,53 @@ router.post("/tasks", async (req, res) => {
     res.status(500).json({ message: "Error creating task", error });
   }
 });
+
+// API route ใน backend เพื่อดึงข้อมูล task
+router.get("/tasks", async (req, res) => {
+  try {
+    const tasks = await Task.find(); // ดึง task ทั้งหมดจากฐานข้อมูล
+    res.json(tasks); // ส่งข้อมูลกลับไปยัง frontend
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching tasks", error });
+  }
+});
+//แก้ไขตาม id
+router.put("/edittasks/:taskId", async (req, res) => {
+  const { taskName, status } = req.body; // ✅ เพิ่ม taskName ด้วย
+  try {
+    const task = await Task.findByIdAndUpdate(
+      req.params.taskId,
+      { taskId: taskName, status }, // ✅ เปลี่ยน field taskId ถ้า taskName หมายถึงชื่อ task
+      { new: true }
+    );
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating task", error });
+  }
+});
+
+// ดึงข้อมูล task ตาม id
+router.get("/viewtasks/:taskId", async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.taskId);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching task", error });
+  }
+});
+// start task
+router.put("/starttasks/:taskId", async (req, res) => {
+  const { status } = req.body;
+  try {
+    const task = await Task.findByIdAndUpdate(req.params.taskId, { status }, { new: true });
+    res.json(task); // ส่งกลับ task ที่อัปเดตแล้ว
+  } catch (error) {
+    res.status(500).json({ message: "Error updating task", error });
+  }
+});
+
 
 module.exports = router;

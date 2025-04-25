@@ -1,0 +1,55 @@
+.task-detail-container {
+  max-width: 500px;
+  margin: 50px auto;
+  background-color: #f8f9fa;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.task-detail-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.task-detail-container p {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.task-detail-container input,
+.task-detail-container select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.task-detail-container button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.task-detail-container button:hover {
+  opacity: 0.85;
+}
+
+.task-detail-container button:first-of-type {
+  background-color: #4caf50;
+  color: white;
+}
+
+.task-detail-container button:last-of-type {
+  background-color: #e74c3c;
+  color: white;
+}

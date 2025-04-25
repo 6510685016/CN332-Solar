@@ -10,6 +10,8 @@ import CreateSolarPlant from "./components/CreateSolarPlant";
 import CreateZone from "./components/CreateZone";
 import TaskManage from "./components/TaskManage";
 import CreateTask from "./components/CreateTask";
+import ViewTask from "./components/ViewTask";
+import EditTask from "./components/EditTask";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
           <Route path="/usermanage" element={<UserManage />} />
           <Route path="/taskmanage" element={<TaskManage />} />
           <Route path="/createtask" element={<CreateTask />} />
+          <Route path="/edittask/:taskId" element={<EditTask />} />
+          <Route path="/viewtask/:taskId" element={<ViewTask />} />
           <Route path="/solarplantmanage" element={<SolarPlantManage />} />
           <Route path="/createsolarplant" element={<CreateSolarPlant />} />
           <Route path="/createzone" element={<CreateZone />} />
