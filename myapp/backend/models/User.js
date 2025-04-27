@@ -1,27 +1,34 @@
-const { ROLE, LP, PERMISSIONS } = require('./Permission');
-const { LogSchema } = require('./Log');
+const { Role } = require('./Role');
 const mongoose = require("mongoose");
 
+/*
+const roleMapping = { 
+  "superAdmin": superAdmin, 
+  "admin": admin, 
+  "analyst": analyst, 
+  "droneController": droneController, 
+  "maintenancer": maintenancer
+};
+*/
 
 // สร้าง Schema สำหรับ User
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, sparse: true},
+  username: { type: String, required: true, sparse: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String }, // ต้องเข้ารหัสก่อนบันทึก
+  password: { type: String }, // Encode
   authProvider: { type: String, enum: ['local', 'google'], required: true },
-  roles: [{ type: String, enum: Object.values(ROLE) }], // รองรับหลาย Role
-  permissions: [{ type: String }],
-  logs: [LogSchema],
+  roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }],
+  logs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Log' }],
   assignedSolarPlants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SolarPlant' }]
 }, {
-  timestamps: true // สร้าง fields createdAt และ updatedAt
+  timestamps: true // createdAt, updatedAt
 });
 
 // สรุป permissions ของ User จาก roles ที่กำหนด โดยใช้ middleware
-UserSchema.pre('save', function (next) {
-  this.permissions = this.roles.flatMap(role => PERMISSIONS[role] || []);
-  next();
-});
+// UserSchema.pre('save', function (next) {
+//   this.permissions = this.roles.flatMap(role => PERMISSIONS[role] || []);
+//   next();
+// });
 
 /*
 // สร้าง static method สำหรับการแก้ไข Permissions 
@@ -37,14 +44,21 @@ UserSchema.statics.updatePermissions = function (role, newPermissions) {
 */
 
 // สร้าง static method สำหรับการตรวจสอบสิทธิ์ของ User
-UserSchema.statics.hasPermission = function (user, permission, solarPlantId = null) {
-  if (!user.permissions.includes(permission)) {
-    return false;
+UserSchema.methods.hasFeature = async function (feature, solarPlantId = null) {
+  if (!solarPlantId || (solarPlantId && this.assignedSolarPlants.some(id => id.toString() === solarPlantId.toString()))) {
+    // roles ทั้งหมดที่ user มีประกอบด้วย feature ไหม
+    this.roles.forEach(role => {
+      if (role.hasFeature(feature)) {
+        return true;
+      }
+    });
   }
-  if (solarPlantId) {
-    return user.assignedSolarPlants.some(id => id.toString() === solarPlantId.toString());
-  }
-  return true;
+  return false;
+};
+
+UserSchema.methods.setRole = async function (roles) {
+  this.roles = roles;
+  this.save();
 };
 
 const User = mongoose.model("User", UserSchema);
