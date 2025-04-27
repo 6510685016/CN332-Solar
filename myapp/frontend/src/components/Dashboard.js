@@ -195,7 +195,7 @@ const Dashboard = () => {
             <>
               <div className="cards">
                 {hasPermission("solarPlantManage") && (
-                  <button className="card-btn">
+                  <button className="card-btn" onClick={() => navigate("/taskmanage")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
                     <div className="header">
                       <img src="logo192.png" alt="Task Manage Dashboard Pic" />
                       <h2>Task Manage Dashboard</h2>

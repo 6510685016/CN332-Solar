@@ -6,9 +6,6 @@ import logo from "../logo.svg";
 
 const UserManage = () => {
     const [users, setUsers] = useState([]);
-    const [search, setSearch] = useState("");
-    const [roles, setRoles] = useState([]);
-    const [permissions, setPermissions] = useState([]);
     const [profile, setProfile] = useState({ name: "", picture: logo });
     const [modalType, setModalType] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -30,8 +27,7 @@ const UserManage = () => {
               name: response.data.username,
               picture: response.data.picture || logo,
             });
-            setRoles(response.data.roles);
-            setPermissions(response.data.permissions);
+
           })
           .catch(() => navigate("/login"));
       }
