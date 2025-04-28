@@ -116,13 +116,15 @@ const SolarPlantManage = () => {
               <td>{plant.name}</td>
               <td>
                 (3) Admin, Drone C., Data A
+                <div>
+                  <button className="edit-zone-button" onClick={() => handleEditZone(plant.id)}>
+                    Edit Zone
+                  </button>
+                </div>
               </td>
               <td>
                 <button className="view-button" onClick={() => handleViewPlant(plant.id)}>
                   View
-                </button>
-                <button className="edit-zone-button" onClick={() => handleEditZone(plant.id)}>
-                  Edit Zone
                 </button>
                 <button className="edit-plant-button" onClick={() => handleEditPlant(plant.id)}>
                   Edit Plant
