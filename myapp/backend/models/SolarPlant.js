@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
+
+//เอาไว้เก็บ solarCells ทั้งหมดภายใน Zone
 const ZoneSchema = new mongoose.Schema({
-  borderPosition: { type: String, required: true }
+  zoneObjs: { type: Zone, required: true }
 });
 
 const SolarPlantSchema = new mongoose.Schema({

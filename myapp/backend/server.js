@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
+const zoneRoutes = require("./routes/zoneRoutes");
 
 const app = express();
 
@@ -21,5 +22,6 @@ mongoose
 // 📌 Routes
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/zones", zoneRoutes);
 
 app.listen(5000, () => console.log("Server running on port 5000"));
