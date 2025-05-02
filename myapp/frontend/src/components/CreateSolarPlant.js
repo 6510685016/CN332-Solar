@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./CreateSolarPlant.css"
+import solarPlantImage from "./picture/createsolarplant.png";
 
 const CreateSolarPlant = () => {
     const navigate = useNavigate();
@@ -32,20 +34,55 @@ const CreateSolarPlant = () => {
 
     return (
         <div className="create-solar-container">
-            <button
-                style={{ marginTop: "1rem" }}
-                onClick={() => navigate(-1)}
-            >
-                ⬅️ Back
+            <button className="back-button" onClick={() => {localStorage.clear();
+                navigate(-1);
+            }}>⬅ Back
             </button>
-            <h2>Create Solar Plant</h2>
-            <input placeholder="Plant name" value={solarPlantName} onChange={(e) => setSolarPlantName(e.target.value)} />
-            <input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
-            <button onClick={handleCreate}>Done</button>
 
-            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+            <div className="profile-section">
+                <span className="profile-name">Username1</span>
+                <img src="../logo.svg" alt="Profile" className="profile-picture" />
+            </div>
 
-            {createdSolarPlantId && (
+            <div className="solar-plant-create">
+                <div className="header">
+                    <h2>Create Solar Plant</h2>
+                </div>
+            </div>
+            
+            <div className="form-card">
+                <div className="form-left">
+                    <label>Solar Plant Name</label>
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        value={solarPlantName}
+                        onChange={(e) => setSolarPlantName(e.target.value)}
+                    />
+
+                    <label>Transformer</label>
+                    <input type="number"/>
+
+                    <label>Inverter</label>
+                    <input type="number"/>
+
+                    <button className="create-zone" onClick={handleCreate}>Done</button>
+
+                    {errorMessage && <p className="error">{errorMessage}</p>}
+                </div>
+
+                <div className="form-right">
+                    <label>Location</label>
+                    <button className="select-button" onClick={() => alert("Select location not implemented")}>
+                        Select
+                    </button>
+                    <img src= {solarPlantImage} alt="Map" className="map-image" />
+                </div>  
+            </div>
+
+            
+
+            {/* {createdSolarPlantId && (
                 <div style={{ marginTop: "1rem" }}>
                     <p>✅ Created: {solarPlantName}</p>
                     <button onClick={() =>
@@ -59,9 +96,7 @@ const CreateSolarPlant = () => {
                         ➕ Create Zone
                     </button>
                 </div>
-            )}
-
-
+            )} */}
         </div>
     );
 
