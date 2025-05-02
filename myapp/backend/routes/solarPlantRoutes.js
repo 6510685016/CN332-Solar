@@ -51,4 +51,33 @@ router.post("/:plantId/zones", async (req, res) => {
     res.json({ message: "Zone created", plant });
 });
 
+//ดึง solarplant ทั้งหมด
+router.get("/", async (req, res) => {
+    try {
+        const plants = await SolarPlant.find().select("name location"); // ดึงเฉพาะที่จำเป็น
+        res.json(plants);
+    } catch (err) {
+        console.error("Failed to fetch plants:", err);
+        res.status(500).json({ error: "Failed to fetch solar plants" });
+    }
+});
+
+//ดึง zones ตาม plant ID
+router.get("/:plantId/zones", async (req, res) => {
+    try {
+        const plant = await SolarPlant.findById(req.params.plantId).populate("zones");
+        if (!plant) return res.status(404).json({ error: "Plant not found" });
+
+        const zones = plant.zones.map(z => ({
+            _id: z._id,
+            name: z.zoneObj.zoneName
+        }));
+
+        res.json(zones);
+    } catch (err) {
+        console.error("Failed to fetch zones:", err);
+        res.status(500).json({ error: "Failed to fetch zones" });
+    }
+});
+
 module.exports = router;
