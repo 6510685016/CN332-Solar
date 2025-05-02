@@ -8,7 +8,7 @@ class SolarPlantComponent {
     }
     this.position = position;
     this.lastMaintenance = lastMaintenance;
-    this.efficiency = efficiency
+    this.efficiency = efficiency;
     this.maintenanceHelper = new Maintenance(this);
   }
 

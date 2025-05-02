@@ -14,7 +14,7 @@ class Zone {
             for (let y = 0; y < this.numSolarY; y++) {
                 const position = `Column: ${x}, Row: ${y}`;
                 const thisDay = new Date().toISOString();
-                const solarCell = new SolarCell(position, thisDay);
+                const solarCell = new SolarCell(position, thisDay, 100);
                 this.solarCellPanel.push(solarCell);
             }
         }
@@ -45,7 +45,6 @@ class SolarPlant {
         this.zones.push(zone);
     }
 
-    //ทำให้ solaplant เก็บ Zone ได้
     manageZone() {
         // logic for managing zones
     }
@@ -69,7 +68,7 @@ class Inverter extends SolarPlantComponent {
     }
 
     get_efficiency() {
-        return this.efficiency;
+        return `${this.efficiency}%`;
     }
 
     set_efficiency(value) {
@@ -87,7 +86,7 @@ class Transformer extends SolarPlantComponent {
     }
 
     get_efficiency() {
-        return this.efficiency;
+        return `${this.efficiency}%`;
     }
 
     set_efficiency(value) {
@@ -105,7 +104,7 @@ class SolarCell extends SolarPlantComponent {
     }
 
     get_efficiency() {
-        return this.efficiency;
+        return `${this.efficiency}%`;
     }
 
     set_efficiency(value) {
