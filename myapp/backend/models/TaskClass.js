@@ -1,51 +1,47 @@
 class Task {
   taskDetail;
-  submitDate;
   dueDate;
   solarPlantID;
   zoneID;
+  status;
   avgEfficiency;
 
-  constructor(taskDetail, submitDate, solarPlantID, zoneID) {
+  constructor(taskDetail, solarPlantID, zoneID, status = "Created") {
     this.taskDetail = taskDetail;
-    this.submitDate = submitDate;
     this.solarPlantID = solarPlantID;
     this.zoneID = zoneID;
+    this.status = status;
   }
 
   get_info() {
     return {
       taskDetail: this.taskDetail,
-      submitDate: this.submitDate,
       dueDate: this.dueDate,
       solarPlantID: this.solarPlantID,
       zoneID: this.zoneID,
+      status: this.status,
       avgEfficiency: this.avgEfficiency
     };
   }
-
 
   setTaskDetail(value) {
     this.taskDetail = value;
   }
 
-
-  setSubmitDate(value) {
-    this.submitDate = value;
-  }
-
-  setdueDate(value) {
+  setDueDate(value) {
     this.dueDate = value;
   }
-
 
   setSolarPlantID(value) {
     this.solarPlantID = value;
   }
 
-
   setZoneID(value) {
     this.zoneID = value;
+  }
+
+  setStatus(value) {
+    this.status = value;
   }
 
   setAvgEfficiency(value) {

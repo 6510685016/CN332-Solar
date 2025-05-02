@@ -5,7 +5,7 @@ import "./TaskManage.css";
 import logo from "../logo.svg";
 
 const TaskManage = () => {
-  const [tasks, setTasks] = useState([]); // เพิ่ม state สำหรับ task
+  const [tasks, setTasks] = useState([]);
   const [profile, setProfile] = useState({ name: "", picture: logo });
   const navigate = useNavigate();
 
@@ -13,44 +13,46 @@ const TaskManage = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
-    } else {
-      axios
-        .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setProfile({
-            name: response.data.username,
-            picture: response.data.picture || logo,
-          });
-        })
-        .catch(() => navigate("/login"));
+      return;
     }
 
-    // ดึงข้อมูล tasks จาก backend
+    // ดึงโปรไฟล์ผู้ใช้
+    axios
+      .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        setProfile({
+          name: response.data.username,
+          picture: response.data.picture || logo,
+        });
+      })
+      .catch(() => navigate("/login"));
+
+    // ดึง tasks จาก backend (เปลี่ยนเป็น /tasks)
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND}/auth/tasks`
-        );
-        setTasks(response.data); // เก็บข้อมูล tasks ที่ดึงมาได้
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND}/tasks`);
+        console.log("Fetched tasks:", response.data);
+        setTasks(response.data);
       } catch (error) {
         console.error("Error fetching tasks", error);
       }
     };
 
-    fetchTasks(); // เรียกฟังก์ชันนี้เพื่อดึงข้อมูล tasks
+    fetchTasks();
   }, [navigate]);
 
   const handleStart = async (taskId) => {
     try {
-      // ส่ง request เพื่อเปลี่ยนสถานะ task เป็น 'waiting'
-      await axios.put(`${process.env.REACT_APP_BACKEND}/auth/starttasks/${taskId}`, {
+      const res = await axios.put(`${process.env.REACT_APP_BACKEND}/tasks/starttasks/${taskId}`, {
         status: "Waiting",
       });
-      setTasks(
-        tasks.map((task) =>
-          task._id === taskId ? { ...task, status: "Waiting" } : task
+
+      // อัปเดต task ที่เพิ่งถูกเปลี่ยนใน frontend
+      setTasks((prev) =>
+        prev.map((task) =>
+          task._id === taskId ? { ...task, status: res.data.status } : task
         )
       );
     } catch (error) {
@@ -58,19 +60,19 @@ const TaskManage = () => {
     }
   };
 
+
   const handleEdit = (taskId) => {
-    navigate(`/edit-task/${taskId}`);
+    navigate(`/edittask/${taskId}`);
   };
 
   const handleView = (taskId) => {
-    navigate(`/view-task/${taskId}`);
+    navigate(`/viewtask/${taskId}`);
   };
 
   return (
     <div className="task-manage-container">
-      <button className="back-button" onClick={() => navigate("/dashboard")}>
-        ⬅ Back
-      </button>
+      <button className="back-button" onClick={() => navigate("/dashboard")}>⬅ Back</button>
+
       <div className="profile-section">
         <span className="profile-name">{profile.name}</span>
         <img src={profile.picture} alt="Profile" className="profile-picture" />
@@ -82,7 +84,6 @@ const TaskManage = () => {
         Create New Task
       </button>
 
-      {/* ตารางแสดงข้อมูล task */}
       <table className="task-table">
         <thead>
           <tr>
@@ -90,35 +91,28 @@ const TaskManage = () => {
             <th>SolarPlant</th>
             <th>Zone</th>
             <th>Status</th>
-            <th>Time</th>
+            <th>Due Date</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {/* แสดงข้อมูล task ที่ดึงมาจาก backend */}
           {tasks.map((task) => (
-            <tr key={task.taskId}>
-              {" "}
-              {/* taskId เป็น unique identifier */}
-              <td>{task.taskId}</td> {/* หรือชื่อที่ต้องการแสดง */}
-              <td>{task.solarPlantName}</td>{" "}
-              {/* ใช้ชื่อ Solar Plant ของ task */}
-              <td>{task.zone}</td> {/* ใช้ zone ของ task */}
-              <td>{task.status}</td> {/* สถานะของ task */}
-              <td>{task.createdAt}</td> {/* เวลาที่สร้าง task */}
+            <tr key={task._id}>
+              <td>{task.taskId || task._id}</td>
+              <td>{task.solarPlantName}</td>
+              <td>{task.zone}</td>
+              <td>{task.status}</td>
+              <td>{new Date(task.dueDate).toLocaleDateString()}</td>
               <td>
-                {task.status === "Created" || task.status === "Error"?(
+                {(task.status === "Created" || task.status === "Error") && (
                   <>
-                    <button class = "confirm-button" onClick={() => handleStart(task._id)}>Start</button>
-                    <button class = "confirm-button" onClick={() => navigate(`/edittask/${task._id}`)}>
-                      Edit
-                    </button>
+                    <button className="confirm-button" onClick={() => handleStart(task._id)}>Start</button>
+                    <button className="confirm-button" onClick={() => handleEdit(task._id)}>Edit</button>
                   </>
-                ) : task.status === "Ok" || task.status === "Waiting" ? (
-                  <button class = "confirm-button" onClick={() => navigate(`/viewtask/${task._id}`)}>
-                    View
-                  </button>
-                ) : null}
+                )}
+                {(task.status === "Ok" || task.status === "Waiting") && (
+                  <button className="confirm-button" onClick={() => handleView(task._id)}>View</button>
+                )}
               </td>
             </tr>
           ))}
