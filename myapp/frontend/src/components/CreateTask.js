@@ -50,7 +50,6 @@ const CreateTask = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND}/tasks`, {
         taskDetail,
-        submitDate,
         dueDate,
         solarPlantID: selectedSolarPlantID,
         zoneID: selectedZoneID,
@@ -76,10 +75,6 @@ const CreateTask = () => {
         <input type="text" value={taskDetail} onChange={(e) => setTaskDetail(e.target.value)} />
       </div>
 
-      <div className="form-group">
-        <label>Submit Date</label>
-        <input type="date" value={submitDate} onChange={(e) => setSubmitDate(e.target.value)} />
-      </div>
 
       <div className="form-group">
         <label>Due Date</label>
