@@ -1,0 +1,80 @@
+/* EditTask.css */
+
+.edit-task-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.edit-task-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 26px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #444;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border 0.2s ease-in-out;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.save-button,
+.cancel-button {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.save-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #43a047;
+}
+
+.cancel-button {
+  background-color: #ccc;
+  color: #333;
+}
+
+.cancel-button:hover {
+  background-color: #b0b0b0;
+}

@@ -1,9 +1,20 @@
 .solar-plant-manage-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f5f5f5;
+    width: 90%;
+    margin: 20px auto;
+    font-family: "Mitr", sans-serif;
+    text-align: center;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 .profile-section {
@@ -15,67 +26,92 @@
     gap: 10px;
 }
 
-.solar-plant-manage {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.profile-name {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: right;
 }
 
-.back-button {
-    background-color: #6c63ff;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
+.profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: blueviolet;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.profile-button {
-    background-color: #6c63ff;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.content {
-    display: flex;
-    justify-content: space-between;
-}
-
-.plant-section,
-.create-new-plant {
-    flex: 1;
+.solar-plant-manage-title {
+    margin-top: 80px;
     text-align: center;
 }
 
-.create-box {
-    width: 100px;
-    height: 100px;
-    background-color: #d1c4e9;
+.search-and-create {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    font-size: 24px;
-    cursor: pointer;
+    margin: 20px 0;
 }
 
-.create-zone {
+.search-bar {
+    width: 30%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.create-button {
     background-color: #6c63ff;
     color: white;
     border: none;
-    padding: 10px;
+    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 10px;
+}
+
+.solar-plant-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.solar-plant-table th,
+.solar-plant-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.solar-plant-table th {
+    background-color: #f4f4f4;
+}
+
+.view-button,
+.edit-zone-button,
+.edit-plant-button,
+.delete-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.view-button {
+    background-color: #6c63ff;
+    color: white;
+}
+
+.edit-zone-button {
+    background-color: #2196f3;
+    color: white;
+}
+
+.edit-plant-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.delete-button {
+    background-color: #f44336;
+    color: white;
 }
