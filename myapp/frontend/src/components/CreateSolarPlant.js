@@ -1,49 +1,70 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./CreateSolarPlant.css";
+import axios from "axios";
 
 const CreateSolarPlant = () => {
     const navigate = useNavigate();
+    const [solarPlantName, setSolarPlantName] = useState("");
+    const [location, setLocation] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [createdSolarPlantId, setCreatedSolarPlantId] = useState(null);
+
+    const handleCreate = async () => {
+        setErrorMessage("");
+        try {
+            if (!solarPlantName || !location) {
+                throw new Error("Please fill in both plant name and location");
+            }
+
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND}/solarplants`, {
+                name: solarPlantName,
+                location
+            });
+
+            setCreatedSolarPlantId(response.data._id);
+        } catch (err) {
+            console.error("Create plant failed:", err);
+            const message =
+                err.response?.data?.error || err.message || "Something went wrong";
+            setErrorMessage(message);
+        }
+    };
 
     return (
         <div className="create-solar-container">
-            {/* Back Button */}
-            <button className="back-button" onClick={() => navigate(-1)}>⬅ Back</button>
+            <button
+                style={{ marginTop: "1rem" }}
+                onClick={() => navigate(-1)}
+            >
+                ⬅️ Back
+            </button>
+            <h2>Create Solar Plant</h2>
+            <input placeholder="Plant name" value={solarPlantName} onChange={(e) => setSolarPlantName(e.target.value)} />
+            <input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+            <button onClick={handleCreate}>Done</button>
 
-            {/* Profile Section */}
-            <div className="profile-section">
-                <span className="profile-name">Username1</span>
-                <img src="/path/to/profile.png" alt="Profile" className="profile-picture" />
-            </div>
+            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
 
-            <div className="solar-form-container">
-                <h2>Create Solar Plant</h2>
-
-                <div className="form-group">
-                    <label>Solar Plant Name</label>
-                    <button className="form-button">Name</button>
+            {createdSolarPlantId && (
+                <div style={{ marginTop: "1rem" }}>
+                    <p>✅ Created: {solarPlantName}</p>
+                    <button onClick={() =>
+                        navigate("/createzone", {
+                            state: {
+                                solarPlantId: createdSolarPlantId,
+                                solarPlantName
+                            }
+                        })
+                    }>
+                        ➕ Create Zone
+                    </button>
                 </div>
+            )}
 
-                <div className="form-group">
-                    <label>Location</label>
-                    <button className="form-button">Location</button>
-                </div>
 
-                <div className="form-group">
-                    <label>Picture</label>
-                    <button className="form-button">Upload</button>
-                </div>
-
-                <button className="done-button">Done</button>
-            </div>
-
-            {/* Map Section */}
-            <div className="map-container">
-                <h3>พื้นที่ :</h3>
-                <img src="/path/to/map.png" alt="Map" className="map-image" />
-            </div>
         </div>
     );
+
 };
 
 export default CreateSolarPlant;

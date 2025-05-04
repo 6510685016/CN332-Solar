@@ -1,21 +1,63 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CreateTask.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const CreateTask = () => {
   const navigate = useNavigate();
-  const [taskName, setTaskName] = useState(""); // กรอกชื่อ task
 
-  // ฟังก์ชันในการส่งข้อมูล
+  // state สำหรับ field ต่าง ๆ
+  const [taskDetail, setTaskDetail] = useState("");
+  const [submitDate, setSubmitDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
+
+  // state สำหรับ dropdown
+  const [solarPlants, setSolarPlants] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [selectedSolarPlantID, setSelectedSolarPlantID] = useState("");
+  const [selectedZoneID, setSelectedZoneID] = useState("");
+
+  // โหลด solar plants ตอน mount
+  useEffect(() => {
+    const fetchSolarPlants = async () => {
+      try {
+        const url = `${process.env.REACT_APP_BACKEND}/solarplants`;
+        const res = await axios.get(url);
+        setSolarPlants(res.data);
+      } catch (err) {
+        console.error("Failed to load solar plants", err);
+      }
+    };
+    fetchSolarPlants();
+  }, []);
+
+  // เมื่อเลือก solar plant → โหลด zones
+  useEffect(() => {
+    const fetchZones = async () => {
+      if (!selectedSolarPlantID) return;
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants/${selectedSolarPlantID}/zones`);
+        setZones(res.data);
+      } catch (err) {
+        console.error("Failed to load zones", err);
+      }
+    };
+    fetchZones();
+  }, [selectedSolarPlantID]);
+
+  // สร้าง Task
   const handleSubmit = async () => {
-    // ส่งชื่อ task ไปเป็น id
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND}/auth/tasks`, {
-        taskId: taskName, // ส่งชื่อที่กรอกมาเป็น task id
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND}/tasks`, {
+        taskDetail,
+        dueDate,
+        solarPlantID: selectedSolarPlantID,
+        zoneID: selectedZoneID,
+        avgEfficiency: null
       });
+      console.log("Created task:", response.data);
       alert("Task created successfully!");
-      navigate("/taskmanage"); // เปลี่ยนไปที่หน้า TaskManage
+      navigate("/taskmanage");
     } catch (error) {
       alert("Error creating task");
       console.error(error);
@@ -29,13 +71,34 @@ const CreateTask = () => {
       <h2>Create Task</h2>
 
       <div className="form-group">
-        <label>Task Name</label>
-        <input
-          type="text"
-          value={taskName}
-          onChange={(e) => setTaskName(e.target.value)}
-          placeholder="Enter task name"
-        />
+        <label>Task Detail</label>
+        <input type="text" value={taskDetail} onChange={(e) => setTaskDetail(e.target.value)} />
+      </div>
+
+
+      <div className="form-group">
+        <label>Due Date</label>
+        <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+      </div>
+
+      <div className="form-group">
+        <label>Solar Plant</label>
+        <select value={selectedSolarPlantID} onChange={(e) => setSelectedSolarPlantID(e.target.value)}>
+          <option value="">-- Select Solar Plant --</option>
+          {solarPlants.map((plant) => (
+            <option key={plant._id} value={plant._id}>{plant.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <label>Zone</label>
+        <select value={selectedZoneID} onChange={(e) => setSelectedZoneID(e.target.value)} disabled={!zones.length}>
+          <option value="">-- Select Zone --</option>
+          {zones.map((zone) => (
+            <option key={zone._id} value={zone._id}>{zone.name}</option>
+          ))}
+        </select>
       </div>
 
       <div className="button-group">

@@ -1,3 +1,5 @@
+const { Maintenance } = require('./MaintenanceClass.js');
+
 class Maintenance extends ComponentMaintenance {
   constructor(component) {
     super();

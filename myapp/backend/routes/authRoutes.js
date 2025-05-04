@@ -14,7 +14,7 @@ router.post("/register", async (req, res) => {
   if (existingUser) return res.status(400).json({ msg: "Email already exists" });
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = await User.create({ username, email, password: hashedPassword , authProvider: "local"});
+  const newUser = await User.create({ username, email, password: hashedPassword, authProvider: "local" });
 
   res.json({ msg: "User registered successfully" });
 });
@@ -74,7 +74,7 @@ router.get('/userboard', async (req, res) => {
       email: user.email,
       roles: user.roles.map(roles => roles.name), // ดึงชื่อ role ออกมา
     }));
-    res.json({users : simplifiedUsers});
+    res.json({ users: simplifiedUsers });
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ message: "Failed to retrieve users", error: error }); // ส่งข้อผิดพลาดกลับ
@@ -87,7 +87,7 @@ router.post('/google', async (req, res) => {
   const { credential } = req.body.credential;
   const decoded = jwtDecode(credential);
   const useremail = decoded.email;
-  let user = await User.findOne({email: useremail});
+  let user = await User.findOne({ email: useremail });
 
   if (!user) {
     user = await User.create({
@@ -99,71 +99,6 @@ router.post('/google', async (req, res) => {
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
   res.json({ token });
-});
-
-//สร้างใหม่
-router.post("/tasks", async (req, res) => {
-  const { taskId } = req.body; // รับ taskId ที่ส่งมา
-
-  try {
-    const task = new Task({
-      taskId, // ใช้ taskId ที่ส่งมา
-      status: "Created", // สถานะเริ่มต้นเป็น pending
-      createdAt: new Date(),
-    });
-
-    await task.save();
-    res.status(201).json({ message: "Task created successfully", task });
-  } catch (error) {
-    res.status(500).json({ message: "Error creating task", error });
-  }
-});
-
-// API route ใน backend เพื่อดึงข้อมูล task
-router.get("/tasks", async (req, res) => {
-  try {
-    const tasks = await Task.find(); // ดึง task ทั้งหมดจากฐานข้อมูล
-    res.json(tasks); // ส่งข้อมูลกลับไปยัง frontend
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching tasks", error });
-  }
-});
-//แก้ไขตาม id
-router.put("/edittasks/:taskId", async (req, res) => {
-  const { taskName, status } = req.body; // ✅ เพิ่ม taskName ด้วย
-  try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.taskId,
-      { taskId: taskName, status }, // ✅ เปลี่ยน field taskId ถ้า taskName หมายถึงชื่อ task
-      { new: true }
-    );
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating task", error });
-  }
-});
-
-// ดึงข้อมูล task ตาม id
-router.get("/viewtasks/:taskId", async (req, res) => {
-  try {
-    const task = await Task.findById(req.params.taskId);
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching task", error });
-  }
-});
-// start task
-router.put("/starttasks/:taskId", async (req, res) => {
-  const { status } = req.body;
-  try {
-    const task = await Task.findByIdAndUpdate(req.params.taskId, { status }, { new: true });
-    res.json(task); // ส่งกลับ task ที่อัปเดตแล้ว
-  } catch (error) {
-    res.status(500).json({ message: "Error updating task", error });
-  }
 });
 
 

@@ -12,7 +12,8 @@ const ViewTask = () => {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_BACKEND}/auth/viewtasks/${taskId}`);
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND}/tasks/viewtasks/${taskId}`);
+        console.log("Fetched task:", res.data);
         setTask(res.data);
       } catch (err) {
         console.error("Error fetching task:", err);
@@ -26,11 +27,16 @@ const ViewTask = () => {
   return (
     <div className="task-detail-container">
       <h2>Task Details</h2>
-      <p><strong>Name:</strong> {task.taskId}</p>
-      <p><strong>Status:</strong> {task.status}</p>
+      <p><strong>Task Detail:</strong> {task.taskDetail}</p>
+      <p><strong>Due Date:</strong> {new Date(task.dueDate).toLocaleDateString()}</p>
+      <p><strong>Solar Plant:</strong> {task.solarPlantID?.name || "N/A"}</p>
+      <p><strong>Zone:</strong> {task.zoneID?.zoneObj?.zoneName || "N/A"}</p>
+      <p><strong>Average Efficiency:</strong> {task.avgEfficiency}%</p>
+
       <button onClick={() => navigate("/taskmanage")}>Back</button>
     </div>
   );
+
 };
 
 export default ViewTask;

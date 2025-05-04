@@ -1,53 +1,88 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./CreateZone.css";
 
 const CreateZone = () => {
     const navigate = useNavigate();
+    const { state } = useLocation();
+    const { solarPlantId, solarPlantName } = state || {};
+
+    const [zoneName, setZoneName] = useState("");
+    const [numSolarX, setNumSolarX] = useState("");
+    const [numSolarY, setNumSolarY] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const BACKEND_URL = process.env.REACT_APP_BACKEND;
+
+    const handleDone = async () => {
+        setErrorMessage("");
+        try {
+            const response = await axios.post(`${BACKEND_URL}/solarplants/${solarPlantId}/zones`, {
+                zoneName,
+                numSolarX: parseInt(numSolarX),
+                numSolarY: parseInt(numSolarY)
+            });
+
+            console.log("Zone Created:", response.data);
+            window.location.reload();
+        } catch (error) {
+            console.error("Failed to create zone:", error);
+            const message = error.response?.data?.error || "Unknown error";
+            setErrorMessage(message);
+        }
+
+
+    };
 
     return (
         <div className="create-zone-container">
-            {/* Back Button */}
-            <button className="back-button" onClick={() => navigate(-1)}>⬅ Back</button>
+            <h1>Create New Zone in {solarPlantName || "..."}</h1>
 
-            {/* Profile Section */}
-            <div className="profile-section">
-                <span className="profile-name">Username1</span>
-                <img src="/path/to/profile.png" alt="Profile" className="profile-picture" />
+            <div className="form-group">
+                <label>Zone Name:</label>
+                <input
+                    type="text"
+                    value={zoneName}
+                    onChange={(e) => setZoneName(e.target.value)}
+                />
             </div>
 
-            <div className="zone-form-container">
-                <h2>Create Zone in Solar Plant A</h2>
-
-                <div className="form-group">
-                    <label>Zone ID</label>
-                    <button className="form-button">Name</button>
-                </div>
-
-                <div className="form-group">
-                    <label>Area</label>
-                    <button className="form-button">Area</button>
-                </div>
-
-                <div className="form-group">
-                    <label>Transformer</label>
-                    <button className="form-button">Name</button>
-                </div>
-
-                <div className="form-group">
-                    <label>Inverter</label>
-                    <button className="form-button">Name</button>
-                </div>
-
-                <button className="done-button">Done</button>
+            <div className="form-group">
+                <label>Number of Solar in Column:</label>
+                <input
+                    type="number"
+                    value={numSolarX}
+                    onChange={(e) => setNumSolarX(e.target.value)}
+                />
             </div>
 
-            {/* Image Section */}
-            <div className="image-container">
-                <h3>Solar Plant A</h3>
-                <img src="/path/to/solarplant.png" alt="Solar Plant" className="solar-image" />
+            <div className="form-group">
+                <label>Number of Solar Row:</label>
+                <input
+                    type="number"
+                    value={numSolarY}
+                    onChange={(e) => setNumSolarY(e.target.value)}
+                />
             </div>
+
+            <button onClick={handleDone}>Done</button>
+
+            {/* ✅ ปุ่มกลับ */}
+            <button
+                style={{ marginLeft: "1rem" }}
+                onClick={() => navigate(-1)}
+            >
+                ⬅️ Back
+            </button>
+
+            {errorMessage && (
+                <p style={{ color: "red", marginTop: "0.5rem" }}>
+                    {errorMessage}
+                </p>
+            )}
         </div>
+
     );
 };
 
