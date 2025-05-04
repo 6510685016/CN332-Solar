@@ -24,6 +24,24 @@ const ViewTask = () => {
 
   if (!task) return <p>Loading...</p>;
 
+  const downloadTaskCSV = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND}/tasks/export/csv/${taskId}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `task_${taskId}_solarcell.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading task CSV:", error);
+    }
+  };
+
+
+
   return (
     <div className="task-detail-container">
       <h2>Task Details</h2>
@@ -32,7 +50,7 @@ const ViewTask = () => {
       <p><strong>Solar Plant:</strong> {task.solarPlantID?.name || "N/A"}</p>
       <p><strong>Zone:</strong> {task.zoneID?.zoneObj?.zoneName || "N/A"}</p>
       <p><strong>Average Efficiency:</strong> {task.avgEfficiency}%</p>
-
+      <button onClick={downloadTaskCSV}>Download CSV</button>
       <button onClick={() => navigate("/taskmanage")}>Back</button>
     </div>
   );

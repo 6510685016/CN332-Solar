@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Task = require('../models/Task');
+const { Parser } = require('json2csv');
+const Zone = require('../models/SolarPlant');
 
 //สร้าง task
 router.post('/', async (req, res) => {
@@ -100,6 +102,45 @@ router.put("/starttasks/:taskId", async (req, res) => {
         res.status(500).json({ message: "Error updating status", error });
     }
 });
+
+//แปลงข้อมูล Task เป็น csv (ตาม TaskID)
+router.get("/export/csv/:taskId", async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.taskId)
+            .populate("solarPlantID", "name")
+            .populate("zoneID");
+
+        if (!task || !task.zoneID) {
+            return res.status(404).json({ message: "Task or Zone not found" });
+        }
+
+        const zone = task.zoneID;
+        const solarCells = zone.zoneObj?.solarCellPanel || [];
+
+        if (solarCells.length === 0) {
+            return res.status(404).json({ message: "No solar cells in this zone" });
+        }
+
+        const rows = solarCells.map(cell => ({
+            SolarPlant: task.solarPlantID?.name || "N/A",
+            Zone: zone.zoneObj?.zoneName,
+            SolarCellPosition: cell.position,
+            LastMaintenance: cell.lastMaintenance?.split('T')[0] || "N/A",
+            Efficiency: cell.efficiency ?? "N/A"
+        }));
+
+        const parser = new Parser();
+        const csv = parser.parse(rows);
+
+        res.header('Content-Type', 'text/csv');
+        res.attachment(`task_${task._id}_solarcell.csv`);
+        return res.send(csv);
+    } catch (err) {
+        console.error("CSV Export Error:", err);
+        res.status(500).json({ message: "Failed to export solar cell data" });
+    }
+});
+
 
 
 
