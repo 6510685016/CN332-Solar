@@ -107,13 +107,12 @@ const UserManage = () => {
       }
     };
   
-    const roleLabels = {
+  const roleLabels = {
+      SuperAdmin: "SuperAdmin",
       Admin: "Admin",
       DroneController: "DroneController",
       Analyst: "Analyst",
     };
-  
-
   
     return (
       <div className="user-manage-container">
