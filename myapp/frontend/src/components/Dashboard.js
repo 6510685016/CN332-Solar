@@ -12,15 +12,15 @@ const Dashboard = () => {
     new Date().toLocaleTimeString()
   );
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
     } else {
       axios.get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        headers: { Authorization: `Bearer ${token}` },
+      })
         .then((response) => {
           setUsername(response.data.username);
           setRoles(response.data.roles);
@@ -170,7 +170,7 @@ const Dashboard = () => {
                   </button>
                 )}
                 {hasPermission("solarPlantManage") && (
-                  <button className="card-btn">
+                  <button className="card-btn" onClick={() => navigate("/solarplantmanage")}>
                     <div className="header">
                       <img
                         src="logo192.png"
