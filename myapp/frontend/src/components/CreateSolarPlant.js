@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./CreateSolarPlant.css"
+import "./CreateSolarPlant.css";
 import solarPlantImage from "./picture/createsolarplant.png";
 
 const CreateSolarPlant = () => {
@@ -10,6 +10,9 @@ const CreateSolarPlant = () => {
     const [location, setLocation] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [createdSolarPlantId, setCreatedSolarPlantId] = useState(null);
+
+    const [transformer, setTransformer] = useState("");
+    const [inverter, setInverter] = useState("");
 
     const handleCreate = async () => {
         setErrorMessage("");
@@ -20,10 +23,13 @@ const CreateSolarPlant = () => {
 
             const response = await axios.post(`${process.env.REACT_APP_BACKEND}/solarplants`, {
                 name: solarPlantName,
-                location
+                location,
+                transformer,
+                inverter
             });
 
             setCreatedSolarPlantId(response.data._id);
+            navigate("/solarplantmanage")
         } catch (err) {
             console.error("Create plant failed:", err);
             const message =
@@ -34,9 +40,11 @@ const CreateSolarPlant = () => {
 
     return (
         <div className="create-solar-container">
-            <button className="back-button" onClick={() => {localStorage.clear();
+            <button className="back-button" onClick={() => {
+                localStorage.clear();
                 navigate(-1);
-            }}>⬅ Back
+            }}>
+                ⬅ Back
             </button>
 
             <div className="profile-section">
@@ -49,7 +57,7 @@ const CreateSolarPlant = () => {
                     <h2>Create Solar Plant</h2>
                 </div>
             </div>
-            
+
             <div className="form-card">
                 <div className="form-left">
                     <label>Solar Plant Name</label>
@@ -61,45 +69,35 @@ const CreateSolarPlant = () => {
                     />
 
                     <label>Transformer</label>
-                    <input type="number"/>
+                    <input
+                        type="number"
+                        value={transformer}
+                        onChange={(e) => setTransformer(e.target.value)}
+                    />
 
                     <label>Inverter</label>
-                    <input type="number"/>
+                    <input
+                        type="number"
+                        value={inverter}
+                        onChange={(e) => setInverter(e.target.value)}
+                    />
 
                     <button className="create-zone" onClick={handleCreate}>Done</button>
-
-                    {errorMessage && <p className="error">{errorMessage}</p>}
                 </div>
 
                 <div className="form-right">
                     <label>Location</label>
-                    <button className="select-button" onClick={() => alert("Select location not implemented")}>
+                    <button
+                        className="select-button"
+                        onClick={() => setLocation("Bangkok")}
+                    >
                         Select
                     </button>
-                    <img src= {solarPlantImage} alt="Map" className="map-image" />
-                </div>  
-            </div>
-
-            
-
-            {/* {createdSolarPlantId && (
-                <div style={{ marginTop: "1rem" }}>
-                    <p>✅ Created: {solarPlantName}</p>
-                    <button onClick={() =>
-                        navigate("/createzone", {
-                            state: {
-                                solarPlantId: createdSolarPlantId,
-                                solarPlantName
-                            }
-                        })
-                    }>
-                        ➕ Create Zone
-                    </button>
+                    <img src={solarPlantImage} alt="Map" className="map-image" />
                 </div>
-            )} */}
+            </div>
         </div>
     );
-
 };
 
 export default CreateSolarPlant;

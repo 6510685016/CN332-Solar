@@ -5,7 +5,7 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const taskRoutes = require("./routes/taskRoutes");
-const solarPlantRoutes = require("./routes/solarPlantRoutes");
+const solarPlantRoutes = require("./routes/solarplantRoutes");
 
 const app = express();
 

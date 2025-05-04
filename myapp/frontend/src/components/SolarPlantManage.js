@@ -44,7 +44,7 @@ const SolarPlantManage = () => {
 
   // Handle create solar plant button click
   const handleCreatePlant = () => {
-    navigate("/solarplantinfo");
+    navigate("/createsolarplant");
   };
 
   const handleViewPlant = (plantId) => {
