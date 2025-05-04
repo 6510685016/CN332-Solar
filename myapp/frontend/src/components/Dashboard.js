@@ -194,7 +194,7 @@ const Dashboard = () => {
           {selectedRole === "dc" && (
             <>
               <div className="cards">
-                {hasPermission("solarPlantManage") && (
+                {hasPermission("taskManage") && (
                   <button className="card-btn" onClick={() => navigate("/taskmanage")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
                     <div className="header">
                       <img src="logo192.png" alt="Task Manage Dashboard Pic" />
@@ -206,8 +206,8 @@ const Dashboard = () => {
                     </div>
                   </button>
                 )}
-                {hasPermission("solarPlantManage") && (
-                  <button className="card-btn">
+                {hasPermission("taskManage") && (
+                  <button className="card-btn" onClick={() => navigate("/createtask")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
                     <div className="header">
                       <img src="logo192.png" alt="Create New Task Pic" />
                       <h2>Create New Task</h2>
@@ -226,7 +226,7 @@ const Dashboard = () => {
             <>
               <div className="cards">
                 {hasPermission("fetchData") && (
-                  <button className="card-btn">
+                  <button className="card-btn" onClick={() => navigate("/dashboard")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
                     <div className="header">
                       <img src="logo192.png" alt="Zones Dashboard Pic" />
                       <h2>Zones Dashboard</h2>
@@ -234,28 +234,6 @@ const Dashboard = () => {
                     <div className="ability">
                       <h3>Monitor Zone</h3>
                       <h3>Status and Tasks</h3>
-                    </div>
-                  </button>
-                )}
-                {hasPermission("fetchData") && (
-                  <button className="card-btn">
-                    <div className="header">
-                      <img src="logo192.png" alt="Analysis Result Pic" />
-                      <h2>Analysis Result</h2>
-                    </div>
-                    <div className="ability">
-                      <h3>Monitor and Update Task</h3>
-                    </div>
-                  </button>
-                )}
-                {hasPermission("fetchData") && (
-                  <button className="card-btn">
-                    <div className="header">
-                      <img src="logo192.png" alt="API Dashboard Pic" />
-                      <h2>API Dashboard</h2>
-                    </div>
-                    <div className="ability">
-                      <h3>Check Your API Activity</h3>
                     </div>
                   </button>
                 )}

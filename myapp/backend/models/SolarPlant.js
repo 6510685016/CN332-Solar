@@ -1,14 +1,21 @@
 const mongoose = require("mongoose");
 
+
+//เอาไว้เก็บ solarCells ทั้งหมดภายใน Zone
 const ZoneSchema = new mongoose.Schema({
-  borderPosition: { type: String, required: true }
+  zoneObj: {
+    type: mongoose.Schema.Types.Mixed,
+  }
 });
 
 const SolarPlantSchema = new mongoose.Schema({
-  solarPlantId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   location: { type: String },
-  zones: [ZoneSchema]
+  zones: [{ type: mongoose.Schema.Types.ObjectId, ref: "Zone" }]
 });
 
-module.exports = mongoose.model("SolarPlant", SolarPlantSchema);
+
+const SolarPlant = mongoose.model("SolarPlant", SolarPlantSchema);
+const Zone = mongoose.model("Zone", ZoneSchema);
+
+module.exports = { SolarPlant, Zone };

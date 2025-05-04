@@ -22,20 +22,25 @@ function App() {
     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
       <Router>
         <Routes>
+        // public routes
           <Route path="/" element={<WelcomePage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        // login and register routes
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+        // admin routes
           <Route path="/usermanage" element={<UserManage />} />
-          <Route path="/task" element={<TaskPage />} />
-          <Route path="/taskmanage" element={<TaskManage />} />
-          <Route path="/createtask" element={<CreateTask />} />
-          <Route path="/edittask/:taskId" element={<EditTask />} />
-          <Route path="/viewtask/:taskId" element={<ViewTask />} />
           <Route path="/solarplantmanage" element={<SolarPlantManage />} />
           <Route path="/solarplantinfo/:plantId?" element={<SolarPlantInfo />} />
           <Route path="/createsolarplant" element={<CreateSolarPlant />} />
           <Route path="/createzone" element={<CreateZone />} />
+        // drone controller routes
+          <Route path="/taskmanage" element={<TaskManage />} />
+          <Route path="/createtask" element={<CreateTask />} />
+          <Route path="/edittask/:taskId" element={<EditTask />} />
+          <Route path="/viewtask/:taskId" element={<ViewTask />} />
+        // analyst routes
+          <Route path="/task" element={<TaskPage />} /> // analyst and drone controller
         </Routes>
       </Router>
     </GoogleOAuthProvider>

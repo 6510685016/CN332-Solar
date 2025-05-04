@@ -1,11 +1,23 @@
 const mongoose = require('mongoose');
 
-const TaskSchema = new mongoose.Schema({
-    taskId: { type: String, required: true, unique: true },
-    detail: { type: String },
-    relatedComponent: { type: mongoose.Schema.Types.ObjectId, ref: "Component" },
-    status: { type: String, default: 'Create' },
-    createdAt: { type: Date, default: Date.now }
-});
+const taskSchema = new mongoose.Schema({
+    taskDetail: { type: String, required: true },
+    dueDate: { type: Date },
+    solarPlantID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SolarPlant",
+        required: true
+    },
+    zoneID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Zone",
+        required: true
+    },
+    avgEfficiency: { type: Number },
+    status: {
+        type: String,
+        default: "Created"
+    },
+}, { timestamps: true });
 
-module.exports = mongoose.model("Task", TaskSchema);
+module.exports = mongoose.model("Task", taskSchema);
