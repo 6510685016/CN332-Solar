@@ -14,10 +14,10 @@ mongoose.connect(process.env.MONGO_URI, {
 // ฟังก์ชันเพิ่มข้อมูล Permission
 async function seedPermissions() {
   const permissions = [
-    { name: 'userManage', features: ['delete user', 'edit role', 'assign solar plant', 'get user role'] },
-    { name: 'fetchData', features: ['user api', 'get result'] },
-    { name: 'taskManage', features: ['task create', 'task edit', 'get result'] },
-    { name: 'solarPlantManage', features: ['manage solar plant', 'manage zone', 'get solar plant'] },
+    { name: 'userManage', features: ['nav-usermanage', 'manage-user'] },
+    { name: 'fetchData', features: ['nav-fetchdata', 'fetchdata'] },
+    { name: 'taskManage', features: ['nav-taskmanage', 'manage-task'] },
+    { name: 'solarPlantManage', features: ['nav-solarmanage', 'manage-solarplant', 'manage-zone'] },
     { name: 'maintenance', features: ['maintenance'] }
   ];
 
@@ -47,19 +47,19 @@ async function seedRoles() {
         permissionMap.fetchData,
         permissionMap.taskManage,
         permissionMap.solarPlantManage,
-        permissionMap.maintenance
+        permissionMap.maintenance,
       ]
     },
     {
       name: 'Admin',
       permissions: [
         permissionMap.userManage,
-        permissionMap.solarPlantManage
+        permissionMap.solarPlantManage,
+        permissionMap.maintenance,
       ]
     },
     { name: 'Analyst', permissions: [permissionMap.fetchData] },
     { name: 'DroneController', permissions: [permissionMap.taskManage] },
-    { name: 'Maintenancer', permissions: [permissionMap.maintenance] }
   ];
 
   for (const role of roles) {
