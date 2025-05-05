@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./ViewTask.css"
+import graph from "./picture/graph_mock-up.png";
 
 const ViewTask = () => {
   const { taskId } = useParams();
@@ -50,6 +51,7 @@ const ViewTask = () => {
       <p><strong>Solar Plant:</strong> {task.solarPlantID?.name || "N/A"}</p>
       <p><strong>Zone:</strong> {task.zoneID?.zoneObj?.zoneName || "N/A"}</p>
       <p><strong>Average Efficiency:</strong> {task.avgEfficiency}%</p>
+      <img src={graph} alt="Task Graph" className="task-graph" />
       <button onClick={downloadTaskCSV}>Download CSV</button>
       <button onClick={() => navigate("/taskmanage")}>Back</button>
     </div>
