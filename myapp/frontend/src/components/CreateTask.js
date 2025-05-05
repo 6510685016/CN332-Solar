@@ -7,6 +7,7 @@ const CreateTask = () => {
   const navigate = useNavigate();
 
   // state สำหรับ field ต่าง ๆ
+  const [taskName, setTaskName] = useState("");
   const [taskDetail, setTaskDetail] = useState("");
   const [submitDate, setSubmitDate] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -49,6 +50,7 @@ const CreateTask = () => {
   const handleSubmit = async () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND}/tasks`, {
+        taskName,
         taskDetail,
         dueDate,
         solarPlantID: selectedSolarPlantID,
@@ -69,7 +71,10 @@ const CreateTask = () => {
       <button className="back-button" onClick={() => navigate("/taskmanage")}>⬅ Back</button>
 
       <h2>Create Task</h2>
-
+      <div className="form-group">
+  <label>Task Name</label>
+  <input type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
+</div>
       <div className="form-group">
         <label>Task Detail</label>
         <input type="text" value={taskDetail} onChange={(e) => setTaskDetail(e.target.value)} />

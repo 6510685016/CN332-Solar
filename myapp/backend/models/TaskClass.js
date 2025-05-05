@@ -1,4 +1,6 @@
 class Task {
+  taskId;
+  taskName;
   taskDetail;
   dueDate;
   solarPlantID;
@@ -6,7 +8,9 @@ class Task {
   status;
   avgEfficiency;
 
-  constructor(taskDetail, solarPlantID, zoneID, status = "Created") {
+  constructor(taskId, taskName, taskDetail, solarPlantID, zoneID, status = "Created") {
+    this.taskId = taskId;
+    this.taskName = taskName;
     this.taskDetail = taskDetail;
     this.solarPlantID = solarPlantID;
     this.zoneID = zoneID;
@@ -15,6 +19,8 @@ class Task {
 
   get_info() {
     return {
+      taskId: this.taskId,
+      taskName: this.taskName,
       taskDetail: this.taskDetail,
       dueDate: this.dueDate,
       solarPlantID: this.solarPlantID,
@@ -22,6 +28,15 @@ class Task {
       status: this.status,
       avgEfficiency: this.avgEfficiency
     };
+  }
+
+  // เพิ่ม set/get ถ้าต้องการ
+  setTaskId(value) {
+    this.taskId = value;
+  }
+
+  setTaskName(value) {
+    this.taskName = value;
   }
 
   setTaskDetail(value) {

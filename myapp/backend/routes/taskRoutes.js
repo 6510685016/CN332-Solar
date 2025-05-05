@@ -7,9 +7,14 @@ const Zone = require('../models/SolarPlant');
 //สร้าง task
 router.post('/', async (req, res) => {
     try {
-        const { taskDetail, submitDate, solarPlantID, zoneID, dueDate, avgEfficiency } = req.body;
+        const generateTaskId = () => {
+            return 'task-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 8);
+          };
+        const { taskName, taskDetail, submitDate, solarPlantID, zoneID, dueDate, avgEfficiency } = req.body;
 
         const newTask = new Task({
+            taskId : generateTaskId(),
+            taskName,
             taskDetail,
             submitDate,
             solarPlantID,
@@ -54,6 +59,7 @@ router.get("/", async (req, res) => {
 
         const formatted = tasks.map(task => ({
             _id: task._id,
+            taskName: task.taskName,
             taskId: task.taskId || task._id,
             solarPlantName: task.solarPlantID?.name || "N/A",
             zone: task.zoneID?.zoneObj?.zoneName || "N/A",
@@ -71,20 +77,34 @@ router.get("/", async (req, res) => {
 
 
 //แก้ไขตาม id
+// แก้ไข task
 router.put("/edittasks/:taskId", async (req, res) => {
-    const { taskName, status } = req.body; // ✅ เพิ่ม taskName ด้วย
     try {
-        const task = await Task.findByIdAndUpdate(
+        const { taskName, taskDetail, dueDate, solarPlantID, zoneID } = req.body;
+
+        const updatedTask = await Task.findByIdAndUpdate(
             req.params.taskId,
-            { taskId: taskName, status }, // ✅ เปลี่ยน field taskId ถ้า taskName หมายถึงชื่อ task
-            { new: true }
+            {
+                taskName,
+                taskDetail,
+                dueDate,
+                solarPlantID,
+                zoneID,
+            },
+            { new: true } // return task ที่อัปเดตแล้ว
         );
-        res.json(task);
+
+        if (!updatedTask) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+
+        res.json(updatedTask);
     } catch (error) {
-        console.error("Error editing task:", error);
-        res.status(500).json({ message: "Error updating task", error });
+        console.error("Error updating task:", error);
+        res.status(500).json({ error: "Failed to update task" });
     }
 });
+
 
 // start task
 router.put("/starttasks/:taskId", async (req, res) => {

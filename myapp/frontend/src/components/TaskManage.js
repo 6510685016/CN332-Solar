@@ -33,8 +33,9 @@ const TaskManage = () => {
     const fetchTasks = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND}/tasks`);
+        const sortedTasks = response.data.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
         console.log("Fetched tasks:", response.data);
-        setTasks(response.data);
+        setTasks(sortedTasks);
       } catch (error) {
         console.error("Error fetching tasks", error);
       }
@@ -98,7 +99,7 @@ const TaskManage = () => {
         <tbody>
           {tasks.map((task) => (
             <tr key={task._id}>
-              <td>{task.taskId || task._id}</td>
+              <td>{task.taskName}</td>
               <td>{task.solarPlantName}</td>
               <td>{task.zone}</td>
               <td>{task.status}</td>
