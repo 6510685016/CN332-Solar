@@ -45,6 +45,7 @@ const ViewTask = () => {
   return (
     <div className="task-detail-container">
       <h2>Task Details</h2>
+      <p><strong>Task Name:</strong> {task.taskName}</p>
       <p><strong>Task Detail:</strong> {task.taskDetail}</p>
       <p><strong>Due Date:</strong> {new Date(task.dueDate).toLocaleDateString()}</p>
       <p><strong>Solar Plant:</strong> {task.solarPlantID?.name || "N/A"}</p>
