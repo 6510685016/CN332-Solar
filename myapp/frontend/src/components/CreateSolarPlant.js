@@ -29,7 +29,7 @@ const CreateSolarPlant = () => {
             });
 
             setCreatedSolarPlantId(response.data._id);
-            navigate("/solarplantmanage")
+            // navigate("/solarplantmanage")
         } catch (err) {
             console.error("Create plant failed:", err);
             const message =
@@ -83,6 +83,22 @@ const CreateSolarPlant = () => {
                     />
 
                     <button className="create-zone" onClick={handleCreate}>Done</button>
+
+                    {createdSolarPlantId && (
+                        <div style={{ marginTop: "1rem" }}>
+                            <p>✅ Created: {solarPlantName}</p>
+                            <button onClick={() =>
+                                navigate("/createzone", {
+                                    state: {
+                                        solarPlantId: createdSolarPlantId,
+                                        solarPlantName
+                                    }
+                                })
+                            }>
+                                ➕ Create Zone
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="form-right">
