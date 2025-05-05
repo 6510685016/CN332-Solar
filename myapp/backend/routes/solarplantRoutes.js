@@ -4,10 +4,11 @@ const mongoose = require("mongoose");
 const { SolarPlant } = require("../models/SolarPlant"); // ✅ ใช้ชื่อให้ตรง
 const ZoneModel = mongoose.model("Zone"); // ✅ ดึง Zone model ที่ถูก register ไว้แล้ว
 const { Zone } = require("../models/SolarPlantClass");
+const { Transformer, Inverter } = require("../models/SolarPlantComponent");
 
 //สร้าง solarplant 
 router.post("/", async (req, res) => {
-    const { name, location } = req.body;
+    const { name, location, transformer, inverter } = req.body;
 
     try {
         const newPlant = new SolarPlant({
@@ -15,9 +16,23 @@ router.post("/", async (req, res) => {
             location,
             zones: []
         });
-
         await newPlant.save();
+
         res.json(newPlant);
+
+        const newtransformer = new Transformer({
+            position: location,
+            lastMaintenance: 100,
+            solarPlantId: newPlant._id
+        });
+        newtransformer.save();
+
+        const newinverter = new Inverter({
+            position: location,
+            lastMaintenance: 100,
+            solarPlantId: newPlant._id
+        });
+        newinverter.save();
     } catch (err) {
         console.error("Create plant failed:", err);
         res.status(500).json({ error: "Failed to create plant" });
