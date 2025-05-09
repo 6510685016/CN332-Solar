@@ -1,130 +1,203 @@
 @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
-.body{
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Mitr", sans-serif;
-    font-weight: 200;
-    font-style: normal;
-    
 }
 
-.user-bar{
-    display:flex;
-    justify-content: center;
-    margin-top: 10px;
-    gap: 1000px;
+.body {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.user-bar {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
 }
 
-.hub-btn{
+.hub-btn {
     height: 45px;
-    width: 95px;
-    border: 2px solid  rgba(0, 0, 0, 0.2);
+    width: 120px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     background-color: blueviolet;
     color: white;
+    font-weight: 400;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.hub-btn:hover{
+.hub-btn:hover {
     background-color: rgb(101, 32, 165);
 }
 
-.username-info{
+.username-info {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap:10px
+    gap: 15px;
 }
 
-.username-info img{
+.username-info img {
     height: 50px;
     width: 50px;
     background-color: blueviolet;
-    border: 2px solid  black;
+    border: 2px solid black;
     border-radius: 100%;
 }
 
-.user-info{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    margin-top:15px;
-    gap: 350px;
-}
-
-.hello-user{
-    height: 160px;
-    width: 415px;
-    
-}
-
-hr{
-    margin-top: 10px;
-    width: 85%;
-}
-
-.user-activity{
-    height: 160px;
-    width: 415px;
-    border: 2px solid  rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
-    padding: 10px;
-}
-
-.role-select{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    gap: 350px;
-}
-
-.role-interact{
+.user-info {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-}
-
-.no-role{
-    display: flex;
-    justify-content: center;
-}
-
-.cards{
-    display: flex;
-    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
     gap: 20px;
 }
 
+.hello-user,
+.user-activity {
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+}
+
+.user-activity {
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    padding: 15px;
+    background-color: white;
+}
+
+hr {
+    margin: 20px 0;
+    width: 100%;
+    border: none;
+    border-top: 1px solid #ccc;
+}
+
+.manage-panel {
+    text-align: center;
+}
+
+.role-select {
+    margin-bottom: 20px;
+}
+
+.no-role {
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.role-interact {
+    margin-top: 30px;
+}
+
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
 .card-btn {
-    width: 352px;
-    height: 443px;
+    flex: 1 1 calc(14% - 10px);
+    height: 400px;
     border-radius: 15px;
     border: 1px solid rgba(0, 0, 0, 0.2);
     background-color: white;
-    margin-bottom: 10px;
     cursor: pointer;
-    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.2); 
-    box-sizing: border-box;
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.card-btn .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
 }
 
 .card-btn .header img {
     width: 50px;
     height: 50px;
-    margin-top: 50px;
-    
 }
 
-.card-btn .ability{
-    margin-top: 50px;
+.card-btn .ability {
+    margin-top: 10px;
+    text-align: center;
 }
 
-
-.card-btn:hover{
+.card-btn:hover {
     background-color: rgb(239, 236, 236);
+}
+
+.card-btn {
+  position: relative; /* ใช้ relative เพื่อรองรับตำแหน่ง absolute */
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.card-role-label {
+  position: absolute; /* ใช้ absolute เพื่อให้มันไปที่มุมขวาบน */
+  top: 10px;
+  right: 10px;
+  font-size: 14px; /* ขนาดตัวอักษร */
+  font-weight: normal; /* ตัวหนา */
+  color: #333; /* สีของข้อความ */
+}
+
+.card-btn .header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-btn .header h2 {
+  font-size: 20px; /* ขนาดตัวอักษรของชื่อหัวข้อ */
+  font-weight: 500; /* ตัวหนา */
+}
+
+.card-btn .ability h3 {
+  font-weight: normal; /* ตัวหนา */
+  font-size: 18px; /* ขนาดตัวอักษรเล็ก */
+  color: #666; /* สีของข้อความ */
+}
+
+.card-btn .header span {
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 10px; 
+  margin-top: 20px; 
+  
+  font-size: 100px; /* ขนาดของไอคอน (อิโมจิ) */
+  display: inline-block;
+  text-align: center;
+  line-height: 50px; /* ทำให้ไอคอนอยู่ตรงกลาง */
+}
+
+@media screen and (max-width: 768px) {
+    .user-bar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .user-info {
+        flex-direction: column;
+        gap: 15px;
+    }
 }

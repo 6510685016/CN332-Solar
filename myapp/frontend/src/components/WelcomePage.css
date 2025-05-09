@@ -1,69 +1,76 @@
-@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .welcome-body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
-    background-image: url("https://thumbs.dreamstime.com/b/aerial-view-solar-cell-field-274713666.jpg");
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: 'Mitr', sans-serif;
+  background-image: url("https://www.nepalminute.com/uploads/posts/solar%20power%20plant%20wikipedia1662976666.jpg");
+  background-size: cover;
+  background-position: center;
 }
 
-h1{
-    font-family: "Mitr", sans-serif;
-    font-weight: 400;
-    font-style: normal;
+.welcome-container {
+  background-color: white;
+  width: 500px;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-.welcome-container{
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 800px;
-    height: 600px;
-    gap: 20px;
-    border-radius: 20px;
-    background-color: white;
+.welcome-container img {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
 }
 
-.welcome-container img{
-    width:  250px;
-    height: 250px;
+h1 {
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 30px;
+  color: #333;
 }
 
-
-.login-btn{
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: #1570EF;
-    width: 400px;
-    height: 60px;
-    border-radius: 8px;
-    color:white;
-    border-color: #1570EF;
-    cursor: pointer;
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
 }
 
-.login-btn:hover{
-    background-color: #125dc7;
+.login-btn,
+.regis-btn {
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
 }
 
-.regis-btn{
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: white;
-    width: 400px;
-    height: 60px;
-    border-radius: 8px;
-    cursor: pointer;
-    border-color: grey;
+.login-btn {
+  background-color: #1570EF;
+  color: white;
+  border: none;
 }
 
-.regis-btn:hover{
-    background-color: rgb(229, 229, 229);
+.login-btn:hover {
+  background-color: #125dc7;
 }
 
+.regis-btn {
+  background-color: white;
+  color: #333;
+  border: 1px solid grey;
+}
+
+.regis-btn:hover {
+  background-color: #e5e5e5;
+}

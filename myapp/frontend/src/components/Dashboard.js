@@ -7,10 +7,7 @@ const Dashboard = () => {
   const [username, setUsername] = useState("");
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [currentTime, setCurrentTime] = useState(
-    new Date().toLocaleTimeString()
-  );
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,22 +15,14 @@ const Dashboard = () => {
     if (!token) {
       navigate("/login");
     } else {
-      axios.get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      axios
+        .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((response) => {
           setUsername(response.data.username);
           setRoles(response.data.roles);
           setPermissions(response.data.permissions);
-
-          // โหลด role ล่าสุดจาก localStorage หรือใช้ role แรกในลิสต์
-          const savedRole = localStorage.getItem("selectedRole");
-          if (savedRole && response.data.roles.includes(savedRole)) {
-            setSelectedRole(savedRole);
-          } else if (response.data.roles.length > 0) {
-            setSelectedRole(response.data.roles[0]);
-            localStorage.setItem("selectedRole", response.data.roles[0]);
-          }
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -42,27 +31,10 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  const handleRoleClick = (role) => {
-    const newRole = selectedRole === role ? null : role;
-    setSelectedRole(newRole);
-
-    // บันทึก role ลง localStorage
-    if (newRole) {
-      localStorage.setItem("selectedRole", newRole);
-    } else {
-      localStorage.removeItem("selectedRole");
-    }
-  };
-
-  const hasPermission = (permission) => {
-    return permissions.includes(permission);
-  };
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString());
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -71,15 +43,13 @@ const Dashboard = () => {
     userName = userName.substring(0, 10) + "...";
   }
 
+  const hasPermission = (permission) => permissions.includes(permission);
+
   return (
     <div className="body">
       <div className="user-bar">
         <div className="username-info">
-          <img
-            src="logo192.png"
-            className="profile-img"
-            alt="profile-picture"
-          />
+          <img src="logo192.png" className="profile-img" alt="profile" />
           <h3>{userName}</h3>
         </div>
         <button
@@ -96,7 +66,7 @@ const Dashboard = () => {
       <div className="user-info">
         <div className="hello-user">
           <h1>Hello, {userName}</h1>
-          <h2>System Time: {currentTime} last update....</h2>
+          <h1>System Time: {currentTime} last update....</h1>
         </div>
         <div className="user-activity">
           <h3>last act is ....</h3>
@@ -106,143 +76,87 @@ const Dashboard = () => {
       <hr />
 
       <div className="manage-panel">
-        <div className="role-select">
-          <h1>Management Panel</h1>
-          {roles.includes("Admin") && (
-            <button
-              onClick={() => handleRoleClick("admin")}
-              className="hub-btn"
-            >
-              Administrator
-            </button>
-          )}
-          {roles.includes("DroneController") && (
-            <button onClick={() => handleRoleClick("dc")} className="hub-btn">
-              Drone Controller
-            </button>
-          )}
-          {roles.includes("Analyst") && (
-            <button onClick={() => handleRoleClick("da")} className="hub-btn">
-              Data Analyst
-            </button>
-          )}
-          {roles.includes("SuperAdmin") && (
-            // ถ้ามี SuperAdmin จะแสดงปุ่มทั้งหมดหรือมีสิทธิ์เข้าถึงทุกอย่าง
-            <>
-              <button
-                onClick={() => handleRoleClick("admin")}
-                className="hub-btn"
-              >
-                Administrator
-              </button>
-              <button onClick={() => handleRoleClick("dc")} className="hub-btn">
-                Drone Controller
-              </button>
-              <button onClick={() => handleRoleClick("da")} className="hub-btn">
-                Data Analyst
-              </button>
-            </>
-          )}
-        </div>
-        <div class="no-role">
+        <h1>Management Panel</h1>
+
+        <div className="no-role">
           {roles.length === 0 && (
             <h5>
               No role has been assigned to you.{" "}
-              <a href="www.example.com">Please contact the admin here.</a>
+              <a href="https://www.example.com">Please contact the admin here.</a>
             </h5>
           )}
         </div>
 
-        <div className="role-interact">
-          {selectedRole === "admin" && (
+        <div className="cards">
+          {(roles.includes("Admin") || roles.includes("SuperAdmin")) && (
             <>
-              <div className="cards">
-                {hasPermission("userManage") && (
-                  <button className="card-btn" onClick={() => navigate("/usermanage")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
-                    <div className="header">
-                      <img src="logo192.png" alt="User Manage Dashboard Pic" />
-                      <h2>User Manage Dashboard</h2>
-                    </div>
-                    <div className="ability">
-                      <h3>Assign Roles</h3>
-                      <h3>Manage Users</h3>
-                    </div>
-                  </button>
-                )}
-                {hasPermission("solarPlantManage") && (
-                  <button className="card-btn" onClick={() => navigate("/solarplantmanage")}>
-                    <div className="header">
-                      <img
-                        src="logo192.png"
-                        alt="Solar Plant Manage Dashboard Pic"
-                      />
-                      <h2>Solar Plant Manage Dashboard</h2>
-                    </div>
-                    <div className="ability">
-                      <h3>Create, Modify, Remove Solar Plant.</h3>
-                    </div>
-                  </button>
-                )}
-              </div>
-              <h5>
-                As an Admin, you can Manage and track user activity. Oversee and
-                manage all solar power plants
-              </h5>
+              {hasPermission("userManage") && (
+                <button className="card-btn" onClick={() => navigate("/usermanage")}>
+                  <div className="card-role-label">Admin</div>
+                  <div className="header">
+                    <span role="img" aria-label="user-management">👥</span> {/* อิโมจิสำหรับการจัดการผู้ใช้ */}
+                    <h2>User Manage Dashboard</h2>
+                  </div>
+                  <div className="ability">
+                    <h3>Assign Roles</h3>
+                    <h3>Manage Users</h3>
+                  </div>
+                </button>
+              )}
+              {hasPermission("solarPlantManage") && (
+                <button className="card-btn" onClick={() => navigate("/solarplantmanage")}>
+                  <div className="card-role-label">Admin</div>
+                  <div className="header">
+                    <span role="img" aria-label="solar-plant">🌞</span> {/* อิโมจิสำหรับ Solar Plant */}
+                    <h2>Solar Plant Manage Dashboard</h2>
+                  </div>
+                  <div className="ability">
+                    <h3>Create, Modify, Remove Solar Plant.</h3>
+                  </div>
+                </button>
+              )}
             </>
           )}
 
-          {selectedRole === "dc" && (
+          {(roles.includes("DroneController") || roles.includes("SuperAdmin")) && hasPermission("taskManage") && (
             <>
-              <div className="cards">
-                {hasPermission("taskManage") && (
-                  <button className="card-btn" onClick={() => navigate("/taskmanage")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
-                    <div className="header">
-                      <img src="logo192.png" alt="Task Manage Dashboard Pic" />
-                      <h2>Task Manage Dashboard</h2>
-                    </div>
-                    <div className="ability">
-                      <h3>Monitor Zone</h3>
-                      <h3>Status and Tasks</h3>
-                    </div>
-                  </button>
-                )}
-                {hasPermission("taskManage") && (
-                  <button className="card-btn" onClick={() => navigate("/createtask")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
-                    <div className="header">
-                      <img src="logo192.png" alt="Create New Task Pic" />
-                      <h2>Create New Task</h2>
-                    </div>
-                    <div className="ability">
-                      <h3>Starting Analysis for Solar Plant Zone</h3>
-                    </div>
-                  </button>
-                )}
-              </div>
-              <h5>As a Drone Controller, you can Create and Manage Tasks.</h5>
+              <button className="card-btn" onClick={() => navigate("/taskmanage")}>
+                <div className="card-role-label">Drone Controller</div>
+                <div className="header">
+                  <span role="img" aria-label="drone">🚁</span> {/* อิโมจิสำหรับ Drone */}
+                  <h2>Task Manage Dashboard</h2>
+                </div>
+                <div className="ability">
+                  <h3>Monitor Zone</h3>
+                  <h3>Status and Tasks</h3>
+                </div>
+              </button>
+
+              <button className="card-btn" onClick={() => navigate("/createtask")}>
+                <div className="card-role-label">Drone Controller</div>
+                <div className="header">
+                  <span role="img" aria-label="create-task">📝</span> {/* อิโมจิสำหรับ Create Task */}
+                  <h2>Create New Task</h2>
+                </div>
+                <div className="ability">
+                  <h3>Starting Analysis for Solar Plant Zone</h3>
+                </div>
+              </button>
             </>
           )}
 
-          {selectedRole === "da" && (
-            <>
-              <div className="cards">
-                {hasPermission("fetchData") && (
-                  <button className="card-btn" onClick={() => navigate("/dashboard")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
-                    <div className="header">
-                      <img src="logo192.png" alt="Zones Dashboard Pic" />
-                      <h2>Zones Dashboard</h2>
-                    </div>
-                    <div className="ability">
-                      <h3>Monitor Zone</h3>
-                      <h3>Status and Tasks</h3>
-                    </div>
-                  </button>
-                )}
+          {(roles.includes("Analyst") || roles.includes("SuperAdmin")) && hasPermission("fetchData") && (
+            <button className="card-btn" onClick={() => navigate("/zones")}>
+              <div className="card-role-label">Data Analyst</div>
+              <div className="header">
+                <span role="img" aria-label="zones">🌍</span> {/* อิโมจิสำหรับ Zones */}
+                <h2>Zones Dashboard</h2>
               </div>
-              <h5>
-                As a Data Analyst, you can get data of each zone, AI Analysis
-                Result, API Used Dashboard
-              </h5>
-            </>
+              <div className="ability">
+                <h3>Monitor Zone</h3>
+                <h3>Status and Tasks</h3>
+              </div>
+            </button>
           )}
         </div>
       </div>

@@ -1,7 +1,7 @@
-// RegisterPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./LoginPage.css"; // ใช้ร่วมกับ CSS เดิม
 
 const RegisterPage = () => {
   const [username, setName] = useState("");
@@ -13,64 +13,56 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND}/auth/register`, { username, email, password });
-      navigate("/"); // หลังจากลงทะเบียนสำเร็จให้ไปหน้า login
+      await axios.post(`${process.env.REACT_APP_BACKEND}/auth/register`, {
+        username,
+        email,
+        password,
+      });
+      navigate("/login");
     } catch (error) {
-      setErrorMessage(error.response.data.msg || "Registration failed");
-      console.log("Backend URL:", process.env.REACT_APP_BACKEND);
-
+      setErrorMessage(error.response?.data?.msg || "Registration failed");
     }
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "8px", width: "300px" }}>
-        <h2>Register</h2>
-        {errorMessage && <div style={{ color: "red", marginBottom: "10px" }}>{errorMessage}</div>}
-        <form onSubmit={handleRegister}>
-          <div style={{ marginBottom: "15px" }}>
-            <label>Name:</label>
+    <div className="login-body">
+      <button className="back-button" onClick={() => navigate("/")}>
+          ⬅ Back
+      </button>
+      <div className="left-section">
+        <div className="login-container">
+          <h2>Register</h2>
+          {errorMessage && <p>{errorMessage}</p>}
+          <form onSubmit={handleRegister} className="input-form">
             <input
               type="text"
               value={username}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               required
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
             />
-          </div>
-          <div style={{ marginBottom: "15px" }}>
-            <label>Email:</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
             />
-          </div>
-          <div style={{ marginBottom: "15px" }}>
-            <label>Password:</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
             />
-          </div>
-          <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#4CAF50", color: "white", border: "none", borderRadius: "5px" }}>
-            Register
-          </button>
-        </form>
-        <div style={{ marginTop: "10px", textAlign: "center" }}>
-          <button onClick={() => navigate("/")} style={{ backgroundColor: "transparent", border: "none", color: "#007bff", cursor: "pointer" }}>
+            <button type="submit">Register</button>
+          </form>
+          <button className="link-button" onClick={() => navigate("/login")}>
             Already have an account? Login
           </button>
         </div>
       </div>
+      <div className="right-section"> </div>
     </div>
   );
 };
