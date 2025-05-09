@@ -14,6 +14,8 @@ import TaskManage from "./components/TaskManage";
 import CreateTask from "./components/CreateTask";
 import ViewTask from "./components/ViewTask";
 import EditTask from "./components/EditTask";
+import ZoneDashboard from "./components/ZoneDashboard"
+import ZoneManage from "./components/ZoneManage";
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -41,6 +43,8 @@ function App() {
           <Route path="/viewtask/:taskId" element={<ViewTask />} />
         // analyst routes
           <Route path="/task" element={<TaskPage />} /> // analyst and drone controller
+          <Route path="/zonedashboard" element={<ZoneDashboard />} />
+          <Route path="/zonemanage" element={<ZoneManage />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>
