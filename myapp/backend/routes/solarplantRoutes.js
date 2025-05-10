@@ -63,7 +63,7 @@ router.post("/:plantId/zones", async (req, res) => {
     plant.zones.push(newZone._id);
     await plant.save();
 
-    res.json({ message: "Zone created", plant });
+    res.json({ zoneId: newZone._id });
 });
 
 //ดึง solarplant ทั้งหมด

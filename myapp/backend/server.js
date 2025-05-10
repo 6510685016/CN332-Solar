@@ -5,6 +5,7 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const taskRoutes = require("./routes/taskRoutes");
+const zoneRoutes = require("./routes/zoneRoutes");
 const solarPlantRoutes = require("./routes/solarplantRoutes");
 
 const app = express();
@@ -24,6 +25,7 @@ mongoose
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/tasks", taskRoutes);
+app.use("/zones", zoneRoutes);
 app.use("/solarplants", solarPlantRoutes);
 
 app.listen(5000, () => console.log("Server running on port 5000"));

@@ -24,8 +24,8 @@ const CreateZone = () => {
                 numSolarY: parseInt(numSolarY)
             });
 
-            console.log("Zone Created:", response.data);
-            window.location.reload();
+            const zoneId = response.data.zoneId; 
+            navigate(`/zone/${zoneId}`)
         } catch (error) {
             console.error("Failed to create zone:", error);
             const message = error.response?.data?.error || "Unknown error";

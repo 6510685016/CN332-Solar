@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./TaskPage.css";
 import ZoneGrid from "./ZoneGrid.js";
@@ -7,7 +7,9 @@ import logo from "../logo.svg";
 
 const TaskPage = () => {
     const [profile, setProfile] = useState({ name: "", picture: logo });
-  
+    const { zoneId } = useParams();
+    const [zoneData, setZone] = useState(null);
+    const [classGroup, setGroup] = useState(null);
     const navigate = useNavigate();
   
     useEffect(() => {
@@ -27,11 +29,56 @@ const TaskPage = () => {
           })
           .catch(() => navigate("/login"));
       }
-  
-      // TODO: fetch ZoneData
 
-    }, [navigate]);
-  
+      const groupPanelsByEfficiency = async (panels) => {
+        const groups = {
+          high: 0,   // 100–90
+          medium: 0, // 89–70
+          low: 0     // 69–0
+        };
+        panels.forEach(panel => {
+          const eff = panel.efficiency;
+          if (eff >= 90) {
+            groups.high++;
+          } else if (eff >= 70) {
+            groups.medium++;
+          } else {
+            groups.low++;
+          }
+        });
+        setGroup(groups);
+      }
+      
+      const fetchZone = async () => {
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_BACKEND}/zones/get/${zoneId}`);
+          console.log("Fetched task:", response.data);
+          setZone(response.data);
+          groupPanelsByEfficiency(response.data.zoneObj.solarCellPanel);
+        } catch (err) {
+          console.error("Error fetching task:", err);
+        }
+      };
+
+      fetchZone();
+      console.log(`Test: ${classGroup}`);
+    }, [navigate, zoneId]);
+
+    const handleUpdate = async (updatedData) => {
+      try {
+        const response = await axios.put(
+          `${process.env.REACT_APP_BACKEND}/zones/update/${zoneId}`,
+          {
+            zoneId: zoneId,
+            solarCellPanel: updatedData
+          }
+        );
+
+      } catch (error) {
+        console.error("Error Update Zone:", error);
+      }
+    };
+
     return (
       <div className="container">
         <button className="back-button" onClick={() => navigate("/dashboard")}>
@@ -46,18 +93,27 @@ const TaskPage = () => {
         <div className="main-content">
             <div className="top-section">
                 <div className="zone-name">
-                    <h1>Zone XXX</h1>
+                    <h1>Zone {zoneData?.zoneObj?.zoneName}</h1>
                 </div>
         
                 <div className="zone-detail">
-                    <h3>มี 100 แผงนา : อะไรสักอย่าง</h3>
-                    <p>เขียว : xxx</p>
-                    <p>เหลือง : xxx</p>
-                    <p>แดง : xxx</p>
+                    <h3>Total {zoneData?.zoneObj?.solarCellPanel?.length} Cells</h3>
+                    <p>เขียว : {classGroup?.high}</p>
+                    <p>เหลือง : {classGroup?.medium}</p>
+                    <p>แดง : {classGroup?.low}</p>
                 </div>
             </div>
 
-            <ZoneGrid width={20} height={10} gridData={[]} containerHeight={350} />
+            <ZoneGrid
+              width={zoneData?.zoneObj?.numSolarX || 10}
+              height={zoneData?.zoneObj?.numSolarY || 10}
+              zoneData={zoneData}
+              containerHeight={350}
+              editable
+              onUpdateSolarPanels={(updatedData) => {
+                handleUpdate(updatedData);
+              }}
+            />
         </div>
       </div>
     );
