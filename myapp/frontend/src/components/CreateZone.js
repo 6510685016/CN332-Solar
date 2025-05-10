@@ -24,7 +24,7 @@ const CreateZone = () => {
                 numSolarY: parseInt(numSolarY)
             });
 
-            const zoneId = response.data.zoneId; 
+            const zoneId = response.data.zoneId;
             navigate(`/zone/${zoneId}`)
         } catch (error) {
             console.error("Failed to create zone:", error);
@@ -37,50 +37,50 @@ const CreateZone = () => {
 
     return (
         <div className="create-zone-container">
-            <h1>Create New Zone in {solarPlantName || "..."}</h1>
+            <h1>Create New Zone in <span>{solarPlantName || "..."}</span></h1>
 
-            <div className="form-group">
-                <label>Zone Name:</label>
-                <input
-                    type="text"
-                    value={zoneName}
-                    onChange={(e) => setZoneName(e.target.value)}
-                />
-            </div>
+            <form className="zone-form" onSubmit={(e) => { e.preventDefault(); handleDone(); }}>
+                <div className="form-group">
+                    <label>Zone Name</label>
+                    <input
+                        type="text"
+                        value={zoneName}
+                        onChange={(e) => setZoneName(e.target.value)}
+                        required
+                    />
+                </div>
 
-            <div className="form-group">
-                <label>Number of Solar in Column:</label>
-                <input
-                    type="number"
-                    value={numSolarX}
-                    onChange={(e) => setNumSolarX(e.target.value)}
-                />
-            </div>
+                <div className="form-group">
+                    <label>Number of Solar in Column</label>
+                    <input
+                        type="number"
+                        value={numSolarX}
+                        onChange={(e) => setNumSolarX(e.target.value)}
+                        required
+                        min={1}
+                    />
+                </div>
 
-            <div className="form-group">
-                <label>Number of Solar Row:</label>
-                <input
-                    type="number"
-                    value={numSolarY}
-                    onChange={(e) => setNumSolarY(e.target.value)}
-                />
-            </div>
+                <div className="form-group">
+                    <label>Number of Solar Row</label>
+                    <input
+                        type="number"
+                        value={numSolarY}
+                        onChange={(e) => setNumSolarY(e.target.value)}
+                        required
+                        min={1}
+                    />
+                </div>
 
-            <button onClick={handleDone}>Done</button>
+                {errorMessage && (
+                    <p className="error-message">{errorMessage}</p>
+                )}
 
-            {/* ✅ ปุ่มกลับ */}
-            <button
-                style={{ marginLeft: "1rem" }}
-                onClick={() => navigate(-1)}
-            >
-                ⬅️ Back
-            </button>
-
-            {errorMessage && (
-                <p style={{ color: "red", marginTop: "0.5rem" }}>
-                    {errorMessage}
-                </p>
-            )}
+                <div className="button-group">
+                    <button type="submit" className="primary"> Done</button>
+                    <button type="button" className="secondary" onClick={() => navigate(-1)}>⬅ Back</button>
+                </div>
+            </form>
         </div>
 
     );
