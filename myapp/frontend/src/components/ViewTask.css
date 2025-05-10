@@ -1,61 +1,104 @@
 .task-detail-container {
-  max-width: 500px;
-  margin: 50px auto;
-  background-color: #f8f9fa;
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  font-family: "Segoe UI", sans-serif;
+  max-width: 1000px;
+  margin: 60px auto;
+  background: linear-gradient(135deg, #f9f9ff, #eef2ff);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  font-family: "Inter", sans-serif;
 }
 
-.task-detail-container h2 {
+.title {
   text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+  font-size: 32px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 40px;
 }
 
-.task-detail-container p {
+.task-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.task-text {
+  flex: 1;
+  min-width: 280px;
+  padding-left: 10px;
+}
+
+.task-text p {
   font-size: 18px;
-  margin-bottom: 10px;
-  color: #444;
+  color: #333;
+  margin-bottom: 16px;
+  line-height: 1.5;
 }
 
-.task-detail-container input,
-.task-detail-container select {
-  width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+.task-text span {
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-.task-detail-container button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  margin-right: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.task-detail-container button:hover {
-  opacity: 0.85;
-}
-
-.task-detail-container button:first-of-type {
-  background-color: #4caf50;
-  color: white;
-}
-
-.task-detail-container button:last-of-type {
-  background-color: #e74c3c;
-  color: white;
+.task-image {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .task-graph {
   width: 100%;
-  max-width: 600px;
+  max-width: 360px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.btn {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.download-btn {
+  background-color: #6c63ff;
+  color: #fff;
+}
+
+.download-btn:hover {
+  background-color: #6c63ff;
+  transform: scale(1.04);
+}
+
+.back-btn {
+  background-color: #d63031;
+  color: #fff;
+}
+
+.back-btn:hover {
+  background-color: #c0392b;
+  transform: scale(1.04);
+}
+
+.zoneGrid {
   margin-top: 20px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
 }
