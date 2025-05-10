@@ -9,11 +9,11 @@ router.post('/', async (req, res) => {
     try {
         const generateTaskId = () => {
             return 'task-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 8);
-          };
+        };
         const { taskName, taskDetail, submitDate, solarPlantID, zoneID, dueDate, avgEfficiency } = req.body;
 
         const newTask = new Task({
-            taskId : generateTaskId(),
+            taskId: generateTaskId(),
             taskName,
             taskDetail,
             submitDate,
@@ -36,7 +36,8 @@ router.get("/viewtasks/:taskId", async (req, res) => {
     try {
         const task = await Task.findById(req.params.taskId)
             .populate("solarPlantID", "name")
-            .populate("zoneID", "zoneObj.zoneName");
+            .populate("zoneID", "zoneObj.zoneName zoneObj.solarCellPanel zoneObj.numSolarX zoneObj.numSolarY")
+
 
         if (!task) {
             return res.status(404).json({ message: "Task not found" });
