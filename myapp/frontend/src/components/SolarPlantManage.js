@@ -11,38 +11,35 @@ const SolarPlantManage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    } else {
-      axios
-        .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setProfile({
-            name: response.data.username,
-            picture: response.data.picture || logo,
-          });
-        })
-        .catch(() => navigate("/login"));
-    }
+    const loadSolarPlants = () => {
+      const savedPlants = JSON.parse(localStorage.getItem("solarPlants") || "[]");
 
-    // Fetch solar plants from database (mock data for now)
-    // In a real application, you'd fetch from your API
-    setPlants([
-      { id: 1, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-      { id: 2, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-      { id: 3, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-      { id: 4, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-      { id: 5, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } }
-    ]);
+      if (savedPlants.length === 0) {
+        const defaultPlants = [
+          { id: 1, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
+          { id: 2, name: "ปูพลังงานแสงอาทิตย์ A002", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
+        ];
+        setPlants(defaultPlants);
+      } else {
+        const formattedPlants = savedPlants.map(plant => ({
+          ...plant,
+          zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" }
+        }));
+        setPlants(formattedPlants);
+      }
+    };
+    
+    setProfile({
+      name: "User1",
+      picture: logo
+    });
+    
+    loadSolarPlants();
+    
   }, [navigate]);
 
-  // Handle Search Input
   const handleSearch = (e) => setSearch(e.target.value);
 
-  // Handle create solar plant button click
   const handleCreatePlant = () => {
     navigate("/createsolarplant");
   };
@@ -52,7 +49,6 @@ const SolarPlantManage = () => {
   };
 
   const handleEditZone = (plantId) => {
-    // Navigate to edit zone page or open a modal
     console.log("Edit zone for plant:", plantId);
   };
 
@@ -61,15 +57,15 @@ const SolarPlantManage = () => {
   };
 
   const handleDeletePlant = (plantId) => {
-    // Implement delete functionality
     console.log("Delete plant:", plantId);
     if (window.confirm("Are you sure you want to delete this solar plant?")) {
-      // Delete logic here
-      setPlants(plants.filter(plant => plant.id !== plantId));
+      const updatedPlants = plants.filter(plant => plant.id !== plantId);
+      setPlants(updatedPlants);
+      
+      localStorage.setItem("solarPlants", JSON.stringify(updatedPlants));
     }
   };
 
-  // Filter plants based on search
   const filteredPlants = plants.filter(plant => 
     plant.name.toLowerCase().includes(search.toLowerCase())
   );
