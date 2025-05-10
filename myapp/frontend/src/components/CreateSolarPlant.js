@@ -1,111 +1,142 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./SolarPlantManage.css";
-import logo from "../logo.svg";
+import "./CreateSolarPlant.css";
+import solarPlantImage from "./picture/createsolarplant.png";
 
-const SolarPlantManage = () => {
-  const [solarPlants, setSolarPlants] = useState([]);
-  const [profile, setProfile] = useState({ name: "", picture: logo });
-  const navigate = useNavigate();
+const CreateSolarPlant = () => {
+    const navigate = useNavigate();
+    const [solarPlantName, setSolarPlantName] = useState("");
+    const [location, setLocation] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [createdSolarPlantId, setCreatedSolarPlantId] = useState(null);
+    const [creationSuccess, setCreationSuccess] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    const [transformer, setTransformer] = useState("");
+    const [inverter, setInverter] = useState("");
 
-    // Fetch user profile
-    axios
-      .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        setProfile({
-          name: response.data.username,
-          picture: response.data.picture || logo,
-        });
-      })
-      .catch(() => navigate("/login"));
+    const handleCreate = async () => {
+        setErrorMessage("");
+        try {
+            if (!solarPlantName || !location) {
+                throw new Error("Please fill in both plant name and location");
+            }
 
-    // Fetch solar plants from backend
-    const fetchSolarPlants = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants`);
-        console.log("Fetched solar plants:", response.data);
-        setSolarPlants(response.data);
-      } catch (error) {
-        console.error("Error fetching solar plants", error);
-      }
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND}/solarplants`, {
+                name: solarPlantName,
+                location,
+                transformer,
+                inverter
+            });
+
+            setCreatedSolarPlantId(response.data._id);
+            setCreationSuccess(true);
+        } catch (err) {
+            console.error("Create plant failed:", err);
+            const message =
+                err.response?.data?.error || err.message || "Something went wrong";
+            setErrorMessage(message);
+        }
     };
 
-    fetchSolarPlants();
-  }, [navigate]);
+    const handleCreateZone = () => {
+        navigate("/createzone", {
+            state: {
+                solarPlantId: createdSolarPlantId,
+                solarPlantName
+            }
+        });
+    };
 
-  const handleCreateZone = (solarPlantId, solarPlantName) => {
-    navigate("/createzone", {
-      state: {
-        solarPlantId: solarPlantId,
-        solarPlantName: solarPlantName
-      }
-    });
-  };
+    const handleViewAllPlants = () => {
+        navigate("/solarplantmanage");
+    };
 
-  const handleView = (solarPlantId) => {
-    navigate(`/viewsolarplant/${solarPlantId}`);
-  };
+    return (
+        <div className="create-solar-container">
+            <button className="back-button" onClick={() => navigate("/solarplantmanage")}>
+                ⬅ Back
+            </button>
 
-  return (
-    <div className="solar-plant-manage-container">
-      <button className="back-button" onClick={() => navigate("/dashboard")}>⬅ Back</button>
+            <div className="profile-section">
+                <span className="profile-name">Username1</span>
+                <img src="../logo.svg" alt="Profile" className="profile-picture" />
+            </div>
 
-      <div className="profile-section">
-        <span className="profile-name">{profile.name}</span>
-        <img src={profile.picture} alt="Profile" className="profile-picture" />
-      </div>
+            <div className="solar-plant-create">
+                <div className="header">
+                    <h2>Create Solar Plant</h2>
+                </div>
+            </div>
 
-      <h2 className="solar-plant-manage-title">Solar Plant Dashboard</h2>
+            <div className="form-card">
+                <div className="form-left">
+                    <label>Solar Plant Name <span style={{ color: "red" }}>*</span></label>
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        value={solarPlantName}
+                        onChange={(e) => setSolarPlantName(e.target.value)}
+                    />
 
-      <button className="create-button" onClick={() => navigate("/createsolarplant")}>
-        Create New Solar Plant
-      </button>
+                    <label>Transformer</label>
+                    <input
+                        type="number"
+                        placeholder="Transformer value"
+                        value={transformer}
+                        onChange={(e) => setTransformer(e.target.value)}
+                    />
 
-      <table className="solar-plant-table">
-        <thead>
-          <tr>
-            <th>Solar Plant Name</th>
-            <th>Location</th>
-            <th>Zones</th>
-            <th>Transformer</th>
-            <th>Inverter</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {solarPlants.map((plant) => (
-            <tr key={plant._id}>
-              <td>{plant.name}</td>
-              <td>{plant.location}</td>
-              <td>
-                {plant.zones && plant.zones.length > 0
-                  ? plant.zones.map(zone => zone.name).join(", ")
-                  : "No zones"}
-              </td>
-              <td>{plant.transformer}</td>
-              <td>{plant.inverter}</td>
-              <td>
-                <button className="confirm-button" onClick={() => handleView(plant._id)}>View</button>
-                <button className="confirm-button" onClick={() => handleCreateZone(plant._id, plant.name)}>
-                  Add Zone
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+                    <label>Inverter</label>
+                    <input
+                        type="number"
+                        placeholder="Inverter value"
+                        value={inverter}
+                        onChange={(e) => setInverter(e.target.value)}
+                    />
+
+                    {!creationSuccess ? (
+                        <>
+                            <button className="create-zone" onClick={handleCreate}>Create Plant</button>
+                            {errorMessage && <p className="error-message" style={{ color: "red" }}>{errorMessage}</p>}
+                        </>
+                    ) : (
+                        <div className="success-actions">
+                            <p style={{ color: "green", marginTop: "1rem" }}>✅ Created: {solarPlantName}</p>
+                            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                                <button onClick={handleCreateZone} style={{ backgroundColor: "#4CAF50", color: "white", padding: "8px 16px", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+                                    ➕ Create Zone
+                                </button>
+                                <button onClick={handleViewAllPlants} style={{ backgroundColor: "#6c63ff", color: "white", padding: "8px 16px", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+                                    View All Plants
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="form-right">
+                    <label>Location <span style={{ color: "red" }}>*</span></label>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <input
+                            type="text"
+                            placeholder="Location"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            style={{ flex: 1 }}
+                        />
+                        <button
+                            className="select-button"
+                            onClick={() => setLocation("Bangkok")}
+                        >
+                            Select
+                        </button>
+                    </div>
+                    <img src={solarPlantImage} alt="Map" className="map-image" />
+                </div>
+            </div>
+        </div>
+    );
 };
 
-export default SolarPlantManage;
+export default CreateSolarPlant;
