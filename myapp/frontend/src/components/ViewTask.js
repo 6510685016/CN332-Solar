@@ -64,7 +64,7 @@ const ViewTask = () => {
 
       <div className="button-group">
         <button className="btn download-btn">⬇ Download CSV</button>
-        <button className="btn back-btn" onClick={() => navigate("/taskmanage")}>⬅ Back</button>
+        <button className="btn back-btn" onClick={() => navigate(-1)}>⬅ Back</button>
       </div>
 
       <div className="zoneGrid">

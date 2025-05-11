@@ -14,25 +14,27 @@ router.post("/", async (req, res) => {
         const newPlant = new SolarPlant({
             name,
             location,
-            zones: []
+            zones: [],
+            transformer,
+            inverter,
         });
         await newPlant.save();
-
-        res.json(newPlant);
 
         const newtransformer = new Transformer({
             position: location,
             lastMaintenance: 100,
             solarPlantId: newPlant._id
         });
-        newtransformer.save();
+        await newtransformer.save();
 
         const newinverter = new Inverter({
             position: location,
             lastMaintenance: 100,
             solarPlantId: newPlant._id
         });
-        newinverter.save();
+        await newinverter.save();
+
+        res.status(201).json(newPlant);
     } catch (err) {
         console.error("Create plant failed:", err);
         res.status(500).json({ error: "Failed to create plant" });

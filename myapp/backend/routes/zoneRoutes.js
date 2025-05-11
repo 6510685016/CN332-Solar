@@ -33,4 +33,15 @@ router.put("/update/:zoneId", async (req, res) => {
     }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    const zone = await Zone.findById(req.params.id);
+    if (!zone) return res.status(404).json({ error: "Zone not found" });
+    res.json(zone);
+  } catch (err) {
+    console.error("Failed to fetch zone:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;

@@ -30,17 +30,31 @@ const SolarPlantManage = () => {
 
     // Fetch solar plants from database (mock data for now)
     // In a real application, you'd fetch from your API
-    setPlants([
-      { id: 1, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-      { id: 2, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-      { id: 3, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-      { id: 4, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-      { id: 5, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } }
-    ]);
-  }, [navigate]);
+  //   setPlants([
+  //     { id: 1, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
+  //     { id: 2, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
+  //     { id: 3, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
+  //     { id: 4, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
+  //     { id: 5, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } }
+  //   ]);
+  // }, [navigate]);
+
+  const fetchPlants = async () => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPlants(res.data); // assumes response is an array of solar plant objects
+    } catch (err) {
+      console.error("Failed to fetch solar plants:", err);
+    }
+  };
+
+  fetchPlants();
+}, [navigate]);
 
   // Handle Search Input
-  const handleSearch = (e) => setSearch(e.target.value);
+  const handleSearch = (e) => setSearch(e.target. value);
 
   // Handle create solar plant button click
   const handleCreatePlant = () => {

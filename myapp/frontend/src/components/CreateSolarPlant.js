@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CreateSolarPlant.css";
 import solarPlantImage from "./picture/createsolarplant.png";
+import logo from "../logo.svg";
 
 const CreateSolarPlant = () => {
+    const [profile, setProfile] = useState({ name: "", picture: logo });
     const navigate = useNavigate();
+
     const [solarPlantName, setSolarPlantName] = useState("");
     const [location, setLocation] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -13,6 +16,27 @@ const CreateSolarPlant = () => {
 
     const [transformer, setTransformer] = useState("");
     const [inverter, setInverter] = useState("");
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+    
+        // ดึงโปรไฟล์ผู้ใช้
+        axios
+          .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            setProfile({
+              name: response.data.username,
+              picture: response.data.picture || logo,
+            });
+          })
+          .catch(() => navigate("/login"));
+    }, [navigate]);
 
     const handleCreate = async () => {
         setErrorMessage("");
@@ -41,15 +65,14 @@ const CreateSolarPlant = () => {
     return (
         <div className="create-solar-container">
             <button className="back-button" onClick={() => {
-                localStorage.clear();
-                navigate(-1);
+                navigate("/solarplantmanage");
             }}>
                 ⬅ Back
             </button>
 
             <div className="profile-section">
-                <span className="profile-name">Username1</span>
-                <img src="../logo.svg" alt="Profile" className="profile-picture" />
+                <span className="profile-name">{profile.name}</span>
+                <img src={profile.picture} alt="Profile" className="profile-picture" />
             </div>
 
             <div className="solar-plant-create">

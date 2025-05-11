@@ -75,6 +75,32 @@ router.get("/", async (req, res) => {
     }
 });
 
+// ดึง task ตาม zone
+router.get("/zones/:zoneId", async (req, res) => {
+  const { zoneId } = req.params;
+  try {
+    const tasks = await Task.find({ zoneID: zoneId })
+      .populate("solarPlantID", "name")
+      .populate("zoneID", "zoneObj.zoneName")
+      .sort({ dueDate: -1 });
+
+    const formatted = tasks.map(task => ({
+      _id: task._id,
+      taskName: task.taskName,
+      taskId: task.taskId || task._id,
+      solarPlantName: task.solarPlantID?.name || "N/A",
+      zone: task.zoneID?.zoneObj?.zoneName || "N/A",
+      zoneId: task.zoneID?._id?.toString() || "",
+      status: task.status || "Created",
+      dueDate: task.dueDate || "N/A"
+    }));
+
+    res.json(formatted);
+  } catch (error) {
+    console.error("Error fetching zone-specific tasks:", error);
+    res.status(500).json({ error: "Failed to fetch tasks for the zone" });
+  }
+});
 
 
 //แก้ไขตาม id
