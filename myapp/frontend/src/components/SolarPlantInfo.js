@@ -42,22 +42,16 @@ const SolarPlantInfo = () => {
         .catch(() => navigate("/login"));
     }
 
-    // If editing an existing plant, fetch its data
     if (plantId && !isNewPlant) {
-      // In a real application, you'd fetch from your API
-      // For now, we'll set some mock data
-      setPlantData({
-        name: "Solar Plant A",
-        location: "Location A",
-        components: [
-          { id: 1, type: "transformer", name: "Transformer A", status: "Operational", lastMaintenance: "2025-01-15" },
-          { id: 2, type: "inverter", name: "Inverter A", status: "Operational", lastMaintenance: "2025-02-20" }
-        ],
-        zones: [
-          { id: 1, name: "Zone AAAAAAAA", actions: ["view", "maintenance"] }
-        ]
-      });
-    }
+  axios.get(`${process.env.REACT_APP_BACKEND}/solarplants/${plantId}`)
+    .then((res) => {
+      setPlantData(res.data);
+    })
+    .catch((err) => {
+      console.error("Error fetching plant:", err);
+    });
+}
+
   }, [navigate, plantId, isNewPlant]);
 
   const handleInputChange = (e) => {

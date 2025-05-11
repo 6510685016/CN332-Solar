@@ -1,19 +1,18 @@
+// backend/models/SolarPlant.js
 const mongoose = require("mongoose");
 
-
-//เอาไว้เก็บ solarCells ทั้งหมดภายใน Zone
 const ZoneSchema = new mongoose.Schema({
-  zoneObj: {
-    type: mongoose.Schema.Types.Mixed,
-  }
+  zoneObj: { type: mongoose.Schema.Types.Mixed },
 });
 
 const SolarPlantSchema = new mongoose.Schema({
   name: { type: String, required: true },
   location: { type: String },
-  zones: [{ type: mongoose.Schema.Types.ObjectId, ref: "Zone" }]
+  zones: [{ type: mongoose.Schema.Types.ObjectId, ref: "Zone" }],
+  // Optional: directly attached to plant
+  transformer: { type: Number },
+  inverter: { type: Number },
 });
-
 
 const SolarPlant = mongoose.model("SolarPlant", SolarPlantSchema);
 const Zone = mongoose.model("Zone", ZoneSchema);

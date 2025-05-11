@@ -1,117 +1,174 @@
 .solar-plant-manage-container {
-    width: 90%;
-    margin: 20px auto;
-    font-family: "Mitr", sans-serif;
-    text-align: center;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Mitr", sans-serif;
 }
 
 .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #6c63ff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-weight: bold;
+  position: absolute;
+  top: 20px;
+  left: 20px;
 }
 
 .profile-section {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  gap: 10px;
 }
 
 .profile-name {
-    font-size: 16px;
-    font-weight: bold;
-    text-align: right;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: right;
 }
 
 .profile-picture {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: blueviolet;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: blueviolet;
 }
 
 .solar-plant-manage-title {
-    margin-top: 80px;
-    text-align: center;
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .search-and-create {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
 }
 
 .search-bar {
-    width: 30%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  width: 30%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .create-button {
-    background-color: #6c63ff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.create-button:hover {
+  background-color: #45a049;
 }
 
 .solar-plant-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .solar-plant-table th,
 .solar-plant-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
 }
 
 .solar-plant-table th {
-    background-color: #f4f4f4;
+  background-color: #f8f8f8;
+  font-weight: bold;
+  color: #333;
+}
+
+.solar-plant-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.loading-message,
+.no-plants-message {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+  color: #666;
 }
 
 .view-button,
-.edit-zone-button,
+
 .edit-plant-button,
 .delete-button {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 2px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 2px;
+  color: white;
 }
 
 .view-button {
-    background-color: #6c63ff;
-    color: white;
-}
-
-.edit-zone-button {
-    background-color: #2196f3;
-    color: white;
+  background-color: #6c63ff;
 }
 
 .edit-plant-button {
-    background-color: #4caf50;
-    color: white;
+  background-color: #4CAF50;
 }
 
 .delete-button {
-    background-color: #f44336;
-    color: white;
+  background-color: #f44336;
+}
+
+@media (max-width: 768px) {
+  .solar-plant-table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .back-button {
+    position: relative;
+    top: 0;
+    left: 0;
+  }
+  
+  .profile-section {
+    position: relative;
+    top: 0;
+    right: 0;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .solar-plant-manage-title {
+    margin-top: 20px;
+  }
+  
+  .search-and-create {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-bar {
+    width: 100%;
+  }
+  
+  .create-button {
+    width: 100%;
+  }
 }

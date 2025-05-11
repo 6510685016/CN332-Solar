@@ -1,92 +1,96 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./SolarPlantManage.css";
 import logo from "../logo.svg";
 
 const SolarPlantManage = () => {
-  const [plants, setPlants] = useState([]);
+  const [solarPlants, setSolarPlants] = useState([]);
   const [profile, setProfile] = useState({ name: "", picture: logo });
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const fetchSolarPlants = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants`);
+      console.log("Fetched solar plants:", response.data);
+      setSolarPlants(response.data);
+    } catch (error) {
+      console.error("Error fetching solar plants", error);
+      setSolarPlants([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
-    } else {
-      axios
-        .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setProfile({
-            name: response.data.username,
-            picture: response.data.picture || logo,
-          });
-        })
-        .catch(() => navigate("/login"));
+      return;
     }
 
-    // Fetch solar plants from database (mock data for now)
-    // In a real application, you'd fetch from your API
-  //   setPlants([
-  //     { id: 1, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-  //     { id: 2, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-  //     { id: 3, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-  //     { id: 4, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } },
-  //     { id: 5, name: "ปูพลังงานแสงอาทิตย์ A001", zone: { admin: "Admin", droneC: "Drone C.", dataA: "Data A" } }
-  //   ]);
-  // }, [navigate]);
-
-  const fetchPlants = async () => {
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants`, {
+    axios
+      .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
         headers: { Authorization: `Bearer ${token}` },
-      });
-      setPlants(res.data); // assumes response is an array of solar plant objects
-    } catch (err) {
-      console.error("Failed to fetch solar plants:", err);
+      })
+      .then((response) => {
+        setProfile({
+          name: response.data.username,
+          picture: response.data.picture || logo,
+        });
+      })
+      .catch(() => navigate("/login"));
+
+    fetchSolarPlants();
+
+    if (location.state?.refreshData) {
+      fetchSolarPlants();
     }
-  };
+  }, [navigate, location]);
 
-  fetchPlants();
-}, [navigate]);
+  const handleSearch = (e) => setSearch(e.target.value);
+  const handleCreatePlant = () => navigate("/createsolarplant");
+  const handleViewPlant = (id) => navigate(`/solarplantinfo/${id}`);
+  const handleEditPlant = (id) => navigate(`/solarplantinfo/${id}?edit=true`);
 
-  // Handle Search Input
-  const handleSearch = (e) => setSearch(e.target. value);
-
-  // Handle create solar plant button click
-  const handleCreatePlant = () => {
-    navigate("/createsolarplant");
-  };
-
-  const handleViewPlant = (plantId) => {
-    navigate(`/solarplantinfo/${plantId}`);
-  };
-
-  const handleEditZone = (plantId) => {
-    // Navigate to edit zone page or open a modal
-    console.log("Edit zone for plant:", plantId);
-  };
-
-  const handleEditPlant = (plantId) => {
-    navigate(`/solarplantinfo/${plantId}?edit=true`);
-  };
-
-  const handleDeletePlant = (plantId) => {
-    // Implement delete functionality
-    console.log("Delete plant:", plantId);
+  const handleDeletePlant = async (id) => {
     if (window.confirm("Are you sure you want to delete this solar plant?")) {
-      // Delete logic here
-      setPlants(plants.filter(plant => plant.id !== plantId));
+      try {
+        await axios.delete(`${process.env.REACT_APP_BACKEND}/solarplants/${id}`);
+        setSolarPlants(solarPlants.filter((p) => p._id !== id));
+      } catch (error) {
+        console.error("Error deleting solar plant", error);
+        alert("Failed to delete solar plant.");
+      }
     }
   };
 
-  // Filter plants based on search
-  const filteredPlants = plants.filter(plant => 
-    plant.name.toLowerCase().includes(search.toLowerCase())
+  const filteredPlants = solarPlants.filter((plant) =>
+    plant.name?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const formatZones = (plant) => {
+    if (!Array.isArray(plant.zones) || plant.zones.length === 0) return "No zones";
+    return plant.zones.map((z) => z.zoneObj.zoneName || "Unnamed").join(", ");
+  };
+
+  const formatTransformers = (plant) => {
+    if (plant.transformer) return plant.transformer;
+    if (!Array.isArray(plant.zones)) return "-";
+    const values = plant.zones.map((z) => z.transformer).filter(Boolean);
+    return values.length ? values.join(", ") : "-";
+  };
+
+  const formatInverters = (plant) => {
+    if (plant.inverter) return plant.inverter;
+    if (!Array.isArray(plant.zones)) return "-";
+    const values = plant.zones.map((z) => z.inverter).filter(Boolean);
+    return values.length ? values.join(", ") : "-";
+  };
 
   return (
     <div className="solar-plant-manage-container">
@@ -99,58 +103,55 @@ const SolarPlantManage = () => {
         <img src={profile.picture} alt="Profile" className="profile-picture" />
       </div>
 
-      <h2 className="solar-plant-manage-title">Solar Plant Manage</h2>
+      <h2 className="solar-plant-manage-title">Solar Plant Dashboard</h2>
 
       <div className="search-and-create">
         <input
           type="text"
-          placeholder="Username/Role"
+          placeholder="Search by name..."
           value={search}
           onChange={handleSearch}
           className="search-bar"
         />
         <button className="create-button" onClick={handleCreatePlant}>
-          Create Solar Plant
+          Create New Solar Plant
         </button>
       </div>
 
-      <table className="solar-plant-table">
-        <thead>
-          <tr>
-            <th>-</th>
-            <th>Name</th>
-            <th>Zone</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPlants.map((plant, index) => (
-            <tr key={plant.id}>
-              <td>{index + 1}</td>
-              <td>{plant.name}</td>
-              <td>
-                (3) Admin, Drone C., Data A
-                <div>
-                  <button className="edit-zone-button" onClick={() => handleEditZone(plant.id)}>
-                    Edit Zone
-                  </button>
-                </div>
-              </td>
-              <td>
-                <button className="view-button" onClick={() => handleViewPlant(plant.id)}>
-                  View
-                </button>
-                <button className="edit-plant-button" onClick={() => handleEditPlant(plant.id)}>
-                  Edit Plant
-                </button>
-                <button className="delete-button" onClick={() => handleDeletePlant(plant.id)}>
-                  Delete
-                </button>
-              </td>
+      {isLoading ? (
+        <div className="loading-message">Loading solar plants...</div>
+      ) : filteredPlants.length === 0 ? (
+        <div className="no-plants-message">No solar plants found.</div>
+      ) : (
+        <table className="solar-plant-table">
+          <thead>
+            <tr>
+              <th>Solar Plant Name</th>
+              <th>Location</th>
+              <th>Zones</th>
+              <th>Transformer</th>
+              <th>Inverter</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredPlants.map((plant) => (
+              <tr key={plant._id}>
+                <td>{plant.name || "-"}</td>
+                <td>{plant.location || "-"}</td>
+                <td>{formatZones(plant)}</td>
+                <td>{formatTransformers(plant)}</td>
+                <td>{formatInverters(plant)}</td>
+                <td>
+                  <button className="view-button" onClick={() => handleViewPlant(plant._id)}>View</button>
+                  <button className="edit-plant-button" onClick={() => handleEditPlant(plant._id)}>Edit</button>
+                  <button className="delete-button" onClick={() => handleDeletePlant(plant._id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

@@ -15,8 +15,8 @@ router.post("/", async (req, res) => {
             name,
             location,
             zones: [],
-            transformer,
-            inverter,
+            transformer: transformer,
+            inverter: inverter,            
         });
         await newPlant.save();
 
@@ -71,13 +71,14 @@ router.post("/:plantId/zones", async (req, res) => {
 //ดึง solarplant ทั้งหมด
 router.get("/", async (req, res) => {
     try {
-        const plants = await SolarPlant.find().select("name location"); // ดึงเฉพาะที่จำเป็น
+        const plants = await SolarPlant.find().populate("zones");
         res.json(plants);
     } catch (err) {
         console.error("Failed to fetch plants:", err);
         res.status(500).json({ error: "Failed to fetch solar plants" });
     }
 });
+
 
 //ดึง zones ตาม plant ID
 router.get("/:plantId/zones", async (req, res) => {
@@ -96,5 +97,26 @@ router.get("/:plantId/zones", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch zones" });
     }
 });
+
+// DELETE a solar plant by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    const plant = await SolarPlant.findById(req.params.id);
+    if (!plant) {
+      return res.status(404).json({ error: "Plant not found" });
+    }
+
+    await Transformer.deleteMany({ solarPlantId: plant._id });
+    await Inverter.deleteMany({ solarPlantId: plant._id });
+    await ZoneModel.deleteMany({ _id: { $in: plant.zones } });
+
+    await plant.deleteOne();
+    res.json({ message: "Solar plant deleted successfully" });
+  } catch (err) {
+    console.error("Failed to delete plant:", err);
+    res.status(500).json({ error: "Failed to delete plant" });
+  }
+});
+
 
 module.exports = router;
