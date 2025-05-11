@@ -18,6 +18,7 @@ import ZoneDashboard from "./components/ZoneDashboard"
 import ZoneManage from "./components/ZoneManage";
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import TaskDashboard from "./components/TaskDashboard";
 
 function App() {
   return (
@@ -43,8 +44,10 @@ function App() {
           <Route path="/viewtask/:taskId" element={<ViewTask />} />
         // analyst routes
           <Route path="/zone/:zoneId" element={<TaskPage />} /> // analyst and drone controller
-          <Route path="/zonedashboard" element={<ZoneDashboard />} />
-          <Route path="/zonemanage" element={<ZoneManage />} />
+          <Route path="/zones" element={<ZoneManage />} />
+          <Route path="/zones/:plantId" element={<ZoneDashboard />} />
+          <Route path="/zones/:zoneId/task" element={<TaskDashboard />} />
+          
         </Routes>
       </Router>
     </GoogleOAuthProvider>

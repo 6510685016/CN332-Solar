@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import logo from "../logo.svg";
 import "./ZoneDashboard.css";
 
 const ZoneDashboard = () => {
-  const [plants, setPlants] = useState([]);
+  const { plantId } = useParams(); // this is actually plantId from the route `/zones/:plantId`
+  const [zones, setZones] = useState([]);
   const [profile, setProfile] = useState({ name: "", picture: logo });
-  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,96 +17,63 @@ const ZoneDashboard = () => {
       return;
     }
 
-    // Set mock profile data
-    setProfile({
-      name: "John Doe",
-      picture: logo,
-    });
+    // Fetch user profile
+    axios
+      .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setProfile({
+          name: res.data.username,
+          picture: res.data.picture || logo,
+        });
+      })
+      .catch(() => navigate("/login"));
 
-    // Set mock solar plant data
-    const mockPlants = [
-      {
-        _id: "p1",
-        name: "Solar Plant Alpha",
-        detail: "High-efficiency panels in desert zone",
-        updatedAt: "2025-02-18T09:00:00Z",
-      },
-      {
-        _id: "p2",
-        name: "Solar Plant Beta",
-        detail: "Floating solar on reservoir",
-        updatedAt: "2025-02-18T10:30:00Z",
-      },
-      {
-        _id: "p3",
-        name: "Gamma Power Field",
-        detail: "Mountain-based PV tracking array",
-        updatedAt: "2025-02-18T11:15:00Z",
-      },
-      {
-        _id: "p4",
-        name: "Delta Solar Hub",
-        detail: "Urban rooftop installation",
-        updatedAt: "2025-02-18T12:45:00Z",
-      },
-      {
-        _id: "p5",
-        name: "Omega Solar Farm",
-        detail: "Hybrid solar-wind generation",
-        updatedAt: "2025-02-18T14:00:00Z",
-      },
-    ];
+    // Fetch zones for the selected plant
+    const fetchZones = async () => {
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants/${plantId}/zones`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setZones(res.data);
+      } catch (err) {
+        console.error("Failed to fetch zones:", err);
+      }
+    };
 
-    setPlants(mockPlants);
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
-
-  const filteredPlants = plants.filter((plant) =>
-    plant.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    fetchZones();
+  }, [navigate, plantId]);
 
   return (
-    <div className="task-manage-container">
-      <div className="profile-section">
-        <span className="profile-name">{profile.name}</span>
-        <img src={profile.picture} alt="Profile" className="profile-picture" />
-        <button className="confirm-button" onClick={handleLogout}>
-          Logout
+    <div className="zone-container">
+      <div className="user-manage-container">
+        <button className="back-button" onClick={() => navigate("/dashboard")}>
+          ⬅ Back
         </button>
+  
+        <div className="profile-section">
+          <span className="profile-name">{profile.name}</span>
+          <img src={profile.picture} alt="Profile" className="profile-picture" />
+        </div>
+  
+        <h2 className="user-manage-title">Zone Manage Dashboard</h2>
       </div>
 
-      <h2 className="task-manage-title">Zone Dashboard</h2>
+      <h1 className="zone-title">Select Zone</h1>
 
-      <input
-        type="text"
-        className="search-bar"
-        placeholder="Search by name/detail/zone"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-
-      <table className="task-table">
-        <thead>
-          <tr>
-            <th>NAME</th>
-            <th>Detail</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPlants.map((plant) => (
-            <tr key={plant._id}>
-              <td><strong>{plant.name}</strong></td>
-              <td>{plant.detail}</td>
-              <td>{new Date(plant.updatedAt).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="zone-list">
+        {zones.map((zone) => (
+          <div
+            key={zone._id}
+            className="zone-item"
+            onClick={() => navigate(`/zones/${zone._id}/task`)}
+          >
+            {zone.name}
+            <span className="arrow-icon">→</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
