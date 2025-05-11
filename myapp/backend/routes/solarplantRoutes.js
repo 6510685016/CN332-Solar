@@ -14,7 +14,9 @@ router.post("/", async (req, res) => {
         const newPlant = new SolarPlant({
             name,
             location,
-            zones: []
+            zones: [],
+            transformer: transformer,
+            inverter: inverter,            
         });
         await newPlant.save();
 
@@ -69,25 +71,8 @@ router.post("/:plantId/zones", async (req, res) => {
 //ดึง solarplant ทั้งหมด
 router.get("/", async (req, res) => {
     try {
-        const plants = await SolarPlant.find().populate("zones").lean();
-
-        // Optional: attach latest transformer/inverter from separate collections
-        const plantIds = plants.map(p => p._id);
-        const transformers = await Transformer.find({ solarPlantId: { $in: plantIds } });
-        const inverters = await Inverter.find({ solarPlantId: { $in: plantIds } });
-
-        // Map each transformer/inverter to its plant
-        const transformerMap = Object.fromEntries(transformers.map(t => [t.solarPlantId, t]));
-        const inverterMap = Object.fromEntries(inverters.map(i => [i.solarPlantId, i]));
-
-        // Attach them to each plant
-        const result = plants.map(plant => ({
-            ...plant,
-            transformer: transformerMap[plant._id]?.position || "-",
-            inverter: inverterMap[plant._id]?.position || "-"
-        }));
-
-        res.json(result);
+        const plants = await SolarPlant.find().populate("zones");
+        res.json(plants);
     } catch (err) {
         console.error("Failed to fetch plants:", err);
         res.status(500).json({ error: "Failed to fetch solar plants" });

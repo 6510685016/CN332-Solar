@@ -2,9 +2,6 @@
 const mongoose = require("mongoose");
 
 const ZoneSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  transformer: { type: String },
-  inverter: { type: String },
   zoneObj: { type: mongoose.Schema.Types.Mixed },
 });
 
@@ -13,8 +10,8 @@ const SolarPlantSchema = new mongoose.Schema({
   location: { type: String },
   zones: [{ type: mongoose.Schema.Types.ObjectId, ref: "Zone" }],
   // Optional: directly attached to plant
-  transformer: { type: String },
-  inverter: { type: String },
+  transformer: { type: Number },
+  inverter: { type: Number },
 });
 
 const SolarPlant = mongoose.model("SolarPlant", SolarPlantSchema);

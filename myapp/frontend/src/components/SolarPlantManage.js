@@ -75,7 +75,7 @@ const SolarPlantManage = () => {
 
   const formatZones = (plant) => {
     if (!Array.isArray(plant.zones) || plant.zones.length === 0) return "No zones";
-    return plant.zones.map((z) => z.name || "Unnamed").join(", ");
+    return plant.zones.map((z) => z.zoneObj.zoneName || "Unnamed").join(", ");
   };
 
   const formatTransformers = (plant) => {
