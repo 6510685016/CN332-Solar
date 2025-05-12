@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./SolarPlantInfo.css";
 import logo from "../logo.svg";
+import solarPlantImage from "./picture/createsolarplant.png";
 
 const SolarPlantInfo = () => {
   const { plantId } = useParams();
@@ -77,26 +78,26 @@ const SolarPlantInfo = () => {
   };
 
   const handleSavePlant = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    await axios.patch(
-      `${process.env.REACT_APP_BACKEND}/solarplants/${plantId}`,
-      {
-        name: plantData.name,
-        location: plantData.location,
-        transformer: plantData.transformer,
-        inverter: plantData.inverter,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    navigate("/solarplantmanage");
-  } catch (error) {
-    console.error("Failed to save plant:", error);
-    alert("Failed to save changes.");
-  }
-};
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `${process.env.REACT_APP_BACKEND}/solarplants/${plantId}`,
+        {
+          name: plantData.name,
+          location: plantData.location,
+          transformer: plantData.transformer,
+          inverter: plantData.inverter,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      navigate("/solarplantmanage");
+    } catch (error) {
+      console.error("Failed to save plant:", error);
+      alert("Failed to save changes.");
+    }
+  };
 
 
   return (
@@ -203,9 +204,7 @@ const SolarPlantInfo = () => {
                 </table>
               </div>
               <div className="zone-map">
-                <div className="map-placeholder">
-                  <div className="map-image"></div>
-                </div>
+                <img src={solarPlantImage} alt="Map" className="map-image" />
               </div>
             </div>
           </div>
