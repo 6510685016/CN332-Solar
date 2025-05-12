@@ -9,79 +9,99 @@ const SolarPlantInfo = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isEditMode = new URLSearchParams(location.search).get("edit") === "true";
-  const isNewPlant = !plantId;
 
   const [profile, setProfile] = useState({ name: "", picture: logo });
   const [plantData, setPlantData] = useState({
     name: "",
     location: "",
-    components: [
-      { id: 1, type: "transformer", name: "", status: "", lastMaintenance: "" },
-      { id: 2, type: "inverter", name: "", status: "", lastMaintenance: "" }
-    ],
-    zones: [
-      { id: 1, name: "Zone AAAAAAAA", actions: ["view", "maintenance"] }
-    ]
+    zones: [],
+    transformer: 0,
+    inverter: 0,
   });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
-    } else {
-      axios
-        .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setProfile({
-            name: response.data.username,
-            picture: response.data.picture || logo,
-          });
-        })
-        .catch(() => navigate("/login"));
+      return;
     }
 
-    if (plantId && !isNewPlant) {
-  axios.get(`${process.env.REACT_APP_BACKEND}/solarplants/${plantId}`)
-    .then((res) => {
-      setPlantData(res.data);
-    })
-    .catch((err) => {
-      console.error("Error fetching plant:", err);
-    });
-}
+    axios
+      .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setProfile({
+          name: res.data.username,
+          picture: res.data.picture || logo,
+        });
+      })
+      .catch(() => navigate("/login"));
 
-  }, [navigate, plantId, isNewPlant]);
+    // ใช้ endpoint เดียวกับ manage แล้ว filter
+    axios.get(`${process.env.REACT_APP_BACKEND}/solarplants`)
+      .then((res) => {
+        const allPlants = res.data;
+        const selectedPlant = allPlants.find((p) => p._id === plantId);
+        if (selectedPlant) {
+          setPlantData({
+            ...selectedPlant,
+            transformer: selectedPlant.transformer || 0,
+            inverter: selectedPlant.inverter || 0,
+          });
+        } else {
+          console.error("Plant not found");
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching solar plants:", err);
+      });
+  }, [navigate, plantId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPlantData({ ...plantData, [name]: value });
   };
 
-  const handleComponentChange = (index, field, value) => {
-    const updatedComponents = [...plantData.components];
-    updatedComponents[index] = { ...updatedComponents[index], [field]: value };
-    setPlantData({ ...plantData, components: updatedComponents });
+  const handleComponentChange = (type, value) => {
+    setPlantData({ ...plantData, [type]: Number(value) });
   };
 
   const handleCreateZone = () => {
-    // Logic to create a new zone
-    console.log("Creating new zone");
+    navigate("/createzone", {
+      state: {
+        solarPlantId: plantId,
+        solarPlantName: plantData.name,
+      },
+    });
   };
 
-  const handleSavePlant = () => {
-    // Logic to save plant data
-    console.log("Saving plant data:", plantData);
-    // After saving, redirect back to the manage page
+  const handleSavePlant = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    await axios.patch(
+      `${process.env.REACT_APP_BACKEND}/solarplants/${plantId}`,
+      {
+        name: plantData.name,
+        location: plantData.location,
+        transformer: plantData.transformer,
+        inverter: plantData.inverter,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     navigate("/solarplantmanage");
-  };
+  } catch (error) {
+    console.error("Failed to save plant:", error);
+    alert("Failed to save changes.");
+  }
+};
+
 
   return (
     <div className="solar-plant-info-container">
-      <button className="back-button" onClick={() => navigate("/solarplantmanage")}>
-        ⬅ Back
-      </button>
+      <button className="back-button" onClick={() => navigate("/solarplantmanage")}>⬅ Back</button>
 
       <div className="profile-section">
         <span className="profile-name">{profile.name}</span>
@@ -89,7 +109,7 @@ const SolarPlantInfo = () => {
       </div>
 
       <div className="solar-plant-info">
-        <h2>{isNewPlant ? "Create Solar Plant" : isEditMode ? "Edit Solar Plant" : "Solar Plant Details"}</h2>
+        <h2>{isEditMode ? "Edit Solar Plant" : "Solar Plant Details"}</h2>
 
         <div className="plant-form">
           <div className="form-group">
@@ -99,7 +119,7 @@ const SolarPlantInfo = () => {
               name="name"
               value={plantData.name}
               onChange={handleInputChange}
-              disabled={!isEditMode && !isNewPlant}
+              disabled={!isEditMode}
             />
           </div>
 
@@ -110,56 +130,43 @@ const SolarPlantInfo = () => {
               name="location"
               value={plantData.location}
               onChange={handleInputChange}
-              disabled={!isEditMode && !isNewPlant}
+              disabled={!isEditMode}
             />
           </div>
 
-          <h3>Component status</h3>
+          <h3>Component Status</h3>
           <table className="component-table">
             <thead>
               <tr>
-                <th>-</th>
-                <th>type</th>
-                <th>name</th>
-                <th>Status</th>
-                <th>Last Maintenance</th>
-                <th>Actions</th>
+                <th>Component</th>
+                <th>Count</th>
               </tr>
             </thead>
             <tbody>
-              {plantData.components.map((component, index) => (
-                <tr key={component.id}>
-                  <td>{index + 1}</td>
-                  <td>{component.type}</td>
-                  <td>
-                    <input
-                      type="text"
-                      value={component.name}
-                      onChange={(e) => handleComponentChange(index, "name", e.target.value)}
-                      disabled={!isEditMode && !isNewPlant}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={component.status}
-                      onChange={(e) => handleComponentChange(index, "status", e.target.value)}
-                      disabled={!isEditMode && !isNewPlant}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="date"
-                      value={component.lastMaintenance}
-                      onChange={(e) => handleComponentChange(index, "lastMaintenance", e.target.value)}
-                      disabled={!isEditMode && !isNewPlant}
-                    />
-                  </td>
-                  <td>
-                    <button className="maintenance-button">Maintenance</button>
-                  </td>
-                </tr>
-              ))}
+              <tr>
+                <td>Transformer</td>
+                <td>
+                  <input
+                    type="number"
+                    value={plantData.transformer}
+                    onChange={(e) => handleComponentChange("transformer", e.target.value)}
+                    disabled={!isEditMode}
+                    min={0}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Inverter</td>
+                <td>
+                  <input
+                    type="number"
+                    value={plantData.inverter}
+                    onChange={(e) => handleComponentChange("inverter", e.target.value)}
+                    disabled={!isEditMode}
+                    min={0}
+                  />
+                </td>
+              </tr>
             </tbody>
           </table>
 
@@ -168,23 +175,27 @@ const SolarPlantInfo = () => {
               <h3>Zone</h3>
               <button className="create-zone-button" onClick={handleCreateZone}>Create zone</button>
             </div>
-            
+
             <div className="zones-container">
               <div className="zone-list">
                 <table className="zone-table">
                   <thead>
                     <tr>
-                      <th>name</th>
+                      <th>Zone Name</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {plantData.zones.map((zone) => (
-                      <tr key={zone.id}>
-                        <td>{zone.name}</td>
+                    {(plantData.zones || []).map((zone) => (
+                      <tr key={zone._id}>
+                        <td>{zone.zoneObj?.zoneName || "Unnamed"}</td>
                         <td>
-                          <button className="view-zone-button">View</button>
-                          <button className="maintenance-button">Maintenance</button>
+                          <button
+                            className="view-zone-button"
+                            onClick={() => navigate(`/zones/${zone._id}/task`)}
+                          >
+                            View
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -193,21 +204,16 @@ const SolarPlantInfo = () => {
               </div>
               <div className="zone-map">
                 <div className="map-placeholder">
-                  {/* Map would go here */}
                   <div className="map-image"></div>
                 </div>
               </div>
             </div>
           </div>
 
-          {(isEditMode || isNewPlant) && (
+          {isEditMode && (
             <div className="form-actions">
-              <button className="save-button" onClick={handleSavePlant}>
-                {isNewPlant ? "Create" : "Save"}
-              </button>
-              <button className="cancel-button" onClick={() => navigate("/solarplantmanage")}>
-                Cancel
-              </button>
+              <button className="save-button" onClick={handleSavePlant}>Save</button>
+              <button className="cancel-button" onClick={() => navigate("/solarplantmanage")}>Cancel</button>
             </div>
           )}
         </div>

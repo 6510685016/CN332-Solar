@@ -207,3 +207,7 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
+.component-table input[type="number"] {
+  width: 100px;
+}

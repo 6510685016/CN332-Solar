@@ -6,7 +6,7 @@ const ZoneModel = mongoose.model("Zone"); // ✅ ดึง Zone model ที่�
 const { Zone } = require("../models/SolarPlantClass");
 const { Transformer, Inverter } = require("../models/SolarPlantComponent");
 
-//สร้าง solarplant 
+// สร้าง solarplant 
 router.post("/", async (req, res) => {
     const { name, location, transformer, inverter } = req.body;
 
@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
             location,
             zones: [],
             transformer: transformer,
-            inverter: inverter,            
+            inverter: inverter,
         });
         await newPlant.save();
 
@@ -68,7 +68,7 @@ router.post("/:plantId/zones", async (req, res) => {
     res.json({ zoneId: newZone._id });
 });
 
-//ดึง solarplant ทั้งหมด
+// ดึง solarplant ทั้งหมด
 router.get("/", async (req, res) => {
     try {
         const plants = await SolarPlant.find().populate("zones");
@@ -79,8 +79,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-
-//ดึง zones ตาม plant ID
+// ดึง zones ตาม plant ID
 router.get("/:plantId/zones", async (req, res) => {
     try {
         const plant = await SolarPlant.findById(req.params.plantId).populate("zones");
@@ -98,25 +97,52 @@ router.get("/:plantId/zones", async (req, res) => {
     }
 });
 
-// DELETE a solar plant by ID
-router.delete("/:id", async (req, res) => {
-  try {
-    const plant = await SolarPlant.findById(req.params.id);
-    if (!plant) {
-      return res.status(404).json({ error: "Plant not found" });
+// แก้ไขข้อมูล solar plant (NEW)
+router.patch("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { name, location, transformer, inverter } = req.body;
+
+    try {
+        const updated = await SolarPlant.findByIdAndUpdate(
+            id,
+            {
+                ...(name !== undefined && { name }),
+                ...(location !== undefined && { location }),
+                ...(transformer !== undefined && { transformer }),
+                ...(inverter !== undefined && { inverter }),
+            },
+            { new: true }
+        );
+
+        if (!updated) {
+            return res.status(404).json({ error: "Solar plant not found" });
+        }
+
+        res.json(updated);
+    } catch (err) {
+        console.error("Failed to update solar plant:", err);
+        res.status(500).json({ error: "Failed to update solar plant" });
     }
-
-    await Transformer.deleteMany({ solarPlantId: plant._id });
-    await Inverter.deleteMany({ solarPlantId: plant._id });
-    await ZoneModel.deleteMany({ _id: { $in: plant.zones } });
-
-    await plant.deleteOne();
-    res.json({ message: "Solar plant deleted successfully" });
-  } catch (err) {
-    console.error("Failed to delete plant:", err);
-    res.status(500).json({ error: "Failed to delete plant" });
-  }
 });
 
+// DELETE a solar plant by ID
+router.delete("/:id", async (req, res) => {
+    try {
+        const plant = await SolarPlant.findById(req.params.id);
+        if (!plant) {
+            return res.status(404).json({ error: "Plant not found" });
+        }
+
+        await Transformer.deleteMany({ solarPlantId: plant._id });
+        await Inverter.deleteMany({ solarPlantId: plant._id });
+        await ZoneModel.deleteMany({ _id: { $in: plant.zones } });
+
+        await plant.deleteOne();
+        res.json({ message: "Solar plant deleted successfully" });
+    } catch (err) {
+        console.error("Failed to delete plant:", err);
+        res.status(500).json({ error: "Failed to delete plant" });
+    }
+});
 
 module.exports = router;
