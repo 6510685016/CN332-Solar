@@ -79,14 +79,14 @@ const SolarPlantManage = () => {
   };
 
   const formatTransformers = (plant) => {
-    if (plant.transformer) return plant.transformer;
+    if (plant.transformer) return plant.transformer.length;
     if (!Array.isArray(plant.zones)) return "-";
     const values = plant.zones.map((z) => z.transformer).filter(Boolean);
     return values.length ? values.join(", ") : "-";
   };
 
   const formatInverters = (plant) => {
-    if (plant.inverter) return plant.inverter;
+    if (plant.inverter) return plant.inverter.length;
     if (!Array.isArray(plant.zones)) return "-";
     const values = plant.zones.map((z) => z.inverter).filter(Boolean);
     return values.length ? values.join(", ") : "-";

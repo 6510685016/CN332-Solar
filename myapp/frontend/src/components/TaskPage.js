@@ -81,7 +81,7 @@ const TaskPage = () => {
 
     return (
       <div className="container">
-        <button className="back-button" onClick={() => navigate("/dashboard")}>
+        <button className="back-button" onClick={() => navigate(-1)}>
         ⬅ Back
         </button>
 

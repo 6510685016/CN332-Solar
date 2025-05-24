@@ -21,42 +21,58 @@ const SolarPlantInfo = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    const fetchData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
 
-    axios
-      .get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        setProfile({
-          name: res.data.username,
-          picture: res.data.picture || logo,
+      try {
+        const userRes = await axios.get(`${process.env.REACT_APP_BACKEND}/auth/user`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-      })
-      .catch(() => navigate("/login"));
+        setProfile({
+          name: userRes.data.username,
+          picture: userRes.data.picture || logo,
+        });
+      } catch {
+        navigate("/login");
+        return;
+      }
 
-    // ใช้ endpoint เดียวกับ manage แล้ว filter
-    axios.get(`${process.env.REACT_APP_BACKEND}/solarplants`)
-      .then((res) => {
-        const allPlants = res.data;
+      try {
+        // ใช้ endpoint เดียวกับ manage แล้ว filter
+        const plantsRes = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants`);
+        const allPlants = plantsRes.data;
         const selectedPlant = allPlants.find((p) => p._id === plantId);
         if (selectedPlant) {
           setPlantData({
-            ...selectedPlant,
-            transformer: selectedPlant.transformer || 0,
-            inverter: selectedPlant.inverter || 0,
+            ...selectedPlant
           });
         } else {
           console.error("Plant not found");
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error fetching solar plants:", err);
-      });
+      }
+
+      try {
+        // Fetch the components (transformers and inverters) for the selected plant
+        const componentsRes = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants/${plantId}/components`);
+        const { transformers, inverters } = componentsRes.data;
+        console.log("Fetched components:", transformers, inverters);
+        setPlantData((prevData) => ({
+          ...prevData,
+          transformers: transformers || [],
+          inverters: inverters || [],
+        }));
+      } catch (err) {
+        console.error("Error fetching components:", err);
+      }
+    };
+
+    fetchData();
   }, [navigate, plantId]);
 
   const handleInputChange = (e) => {
@@ -85,8 +101,8 @@ const SolarPlantInfo = () => {
         {
           name: plantData.name,
           location: plantData.location,
-          transformer: plantData.transformer,
-          inverter: plantData.inverter,
+          transformers: plantData.transformers,
+          inverters: plantData.inverters,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -99,6 +115,30 @@ const SolarPlantInfo = () => {
     }
   };
 
+  const handleMaintainComponent = (type, id) => {
+    if (!plantData?.name || !id || !type) return;
+
+    const efficiency = window.prompt("กรอกค่าประสิทธิภาพที่ต้องการ (%)");
+
+    if (efficiency === null || isNaN(efficiency) || efficiency < 0 || efficiency > 100) {
+      alert("กรุณากรอกค่าที่ถูกต้องระหว่าง 0 - 100");
+      return;
+    }
+
+    axios.patch(`${process.env.REACT_APP_BACKEND}/solarplants/${plantId}/${type}/maintain/${id}`, {
+      efficiency: parseFloat(efficiency),
+    }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    })
+    .then((res) => {
+      alert("อัปเดตการบำรุงรักษาเรียบร้อย");
+      window.location.reload();
+    })
+    .catch((err) => {
+      console.error("Update failed:", err);
+      alert("อัปเดตล้มเหลว");
+    });
+  };
 
   return (
     <div className="solar-plant-info-container">
@@ -139,35 +179,60 @@ const SolarPlantInfo = () => {
           <table className="component-table">
             <thead>
               <tr>
-                <th>Component</th>
-                <th>Count</th>
+                <th>Component Type</th>
+                <th>Position</th>
+                <th>Efficiency</th>
+                <th>Last Maintenance</th>
+                <th>Actions</th>
               </tr>
             </thead>
+            
             <tbody>
-              <tr>
-                <td>Transformer</td>
-                <td>
-                  <input
-                    type="number"
-                    value={plantData.transformer}
-                    onChange={(e) => handleComponentChange("transformer", e.target.value)}
-                    disabled={!isEditMode}
-                    min={0}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Inverter</td>
-                <td>
-                  <input
-                    type="number"
-                    value={plantData.inverter}
-                    onChange={(e) => handleComponentChange("inverter", e.target.value)}
-                    disabled={!isEditMode}
-                    min={0}
-                  />
-                </td>
-              </tr>
+              {(plantData.transformers || []).map((transformer) => (
+                      <tr key={transformer._id}>
+                        <td>Transformer</td>
+                        <td>
+                          {transformer.position || "Not specified"}
+                        </td>
+                        <td>
+                          {transformer.efficiency || "Not specified"}
+                        </td>
+                        <td>
+                          {transformer.lastMaintenance || "Not specified"}
+                        </td>
+                        <td>
+                          <button
+                            className="edit-button"
+                            onClick={() => handleMaintainComponent("transformer", transformer._id)}
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+
+              {(plantData.inverters || []).map((inverter) => (
+                      <tr key={inverter._id}>
+                        <td>Inverter</td>
+                        <td>
+                          {inverter.position || "Not specified"}
+                        </td>
+                        <td>
+                          {inverter.efficiency || "Not specified"}
+                        </td>
+                        <td>
+                          {inverter.lastMaintenance || "Not specified"}
+                        </td>
+                        <td>
+                          <button
+                            className="edit-button"
+                            onClick={() => handleMaintainComponent("inverter", inverter._id)}
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
             </tbody>
           </table>
 
@@ -193,7 +258,7 @@ const SolarPlantInfo = () => {
                         <td>
                           <button
                             className="view-zone-button"
-                            onClick={() => navigate(`/zones/${zone._id}/task`)}
+                            onClick={() => navigate(`/zone/${zone._id}`)}
                           >
                             View
                           </button>

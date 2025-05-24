@@ -72,8 +72,8 @@ const CreateSolarPlant = () => {
         });
     };
 
-    const handleViewAllPlants = () => {
-        navigate("/solarplantmanage");
+    const handleViewThisPlants = () => {
+        navigate("/solarplantinfo/"+createdSolarPlantId);
     };
 
     return (
@@ -133,8 +133,8 @@ const CreateSolarPlant = () => {
                                 <button onClick={handleCreateZone} style={{ backgroundColor: "#4CAF50", color: "white", padding: "8px 16px", border: "none", borderRadius: "5px", cursor: "pointer" }}>
                                     ➕ Create Zone
                                 </button>
-                                <button onClick={handleViewAllPlants} style={{ backgroundColor: "#6c63ff", color: "white", padding: "8px 16px", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-                                    View All Plants
+                                <button onClick={handleViewThisPlants} style={{ backgroundColor: "#6c63ff", color: "white", padding: "8px 16px", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+                                    View This Plant
                                 </button>
                             </div>
                         </div>

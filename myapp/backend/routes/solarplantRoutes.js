@@ -1,39 +1,43 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const { SolarPlant } = require("../models/SolarPlant"); // ✅ ใช้ชื่อให้ตรง
-const ZoneModel = mongoose.model("Zone"); // ✅ ดึง Zone model ที่ถูก register ไว้แล้ว
+const { SolarPlant } = require("../models/SolarPlant"); 
+const { Component } = require("../models/Component"); 
+const ZoneModel = mongoose.model("Zone"); 
+const TransformerModel = mongoose.model("Transformer");
+const SolarCellModel =  mongoose.model("SolarCell");
+const InverterModel = mongoose.model("Inverter"); 
 const { Zone } = require("../models/SolarPlantClass");
-const { Transformer, Inverter } = require("../models/SolarPlantComponent");
+const { Transformer, Inverter, SolarCell } = require("../models/SolarPlantClass");
 
 // สร้าง solarplant 
 router.post("/", async (req, res) => {
     const { name, location, transformer, inverter } = req.body;
-
+    const thisDay = new Date().toISOString();
+    
     try {
         const newPlant = new SolarPlant({
             name,
             location,
             zones: [],
-            transformer: transformer,
-            inverter: inverter,
+            transformer: [],
+            inverter: [],
         });
+
+        //สร้าง Transformer, Inverter
+        for (let index = 0; index < transformer; index++) {
+            const transformerInstance = new Transformer(location, thisDay, 100);
+            const newTransformer = await TransformerModel.create(transformerInstance);
+            newPlant.transformer.push(newTransformer._id);
+        }
+
+        for (let index = 0; index < inverter; index++) {
+            const inverterInstance = new Inverter(location, thisDay, 100);
+            const newInverter = await InverterModel.create(inverterInstance);
+            newPlant.inverter.push(newInverter._id);
+        }
+
         await newPlant.save();
-
-        const newtransformer = new Transformer({
-            position: location,
-            lastMaintenance: 100,
-            solarPlantId: newPlant._id
-        });
-        await newtransformer.save();
-
-        const newinverter = new Inverter({
-            position: location,
-            lastMaintenance: 100,
-            solarPlantId: newPlant._id
-        });
-        await newinverter.save();
-
         res.status(201).json(newPlant);
     } catch (err) {
         console.error("Create plant failed:", err);
@@ -59,11 +63,22 @@ router.post("/:plantId/zones", async (req, res) => {
     }
 
     const zoneInstance = new Zone(zoneName, numSolarX, numSolarY);
-    zoneInstance.generateSolarCells();
+    const thisDay = new Date().toISOString();
+
+    //สร้าง SolarCell push เข้า Array
+    for (let x = 0; x < numSolarX; x++) {
+        for (let y = 0; y < numSolarY; y++) {
+            const position = `Column: ${x}, Row: ${y}`;
+            const solarCell = new SolarCell(position, thisDay, 100);
+            const newSolarCell = await SolarCellModel.create(solarCell);
+            zoneInstance.solarCellPanel.push(newSolarCell._id);
+        }
+    }
 
     const newZone = await ZoneModel.create({ zoneObj: zoneInstance });
     plant.zones.push(newZone._id);
     await plant.save();
+    await newZone.save();
 
     res.json({ zoneId: newZone._id });
 });
@@ -94,6 +109,63 @@ router.get("/:plantId/zones", async (req, res) => {
     } catch (err) {
         console.error("Failed to fetch zones:", err);
         res.status(500).json({ error: "Failed to fetch zones" });
+    }
+});
+
+// GET ALL transformers and inverters by plant ID
+//axios.get(`${process.env.REACT_APP_BACKEND}/solarplants/${plantId}/components`)
+router.get("/:plantId/components", async (req, res) => {
+    try {
+        const plant = await SolarPlant.findById(req.params.plantId)
+            .populate("transformer")
+            .populate("inverter");
+
+        res.json({
+            transformers: plant.transformer,
+            inverters: plant.inverter
+        });
+    } catch (err) {
+        console.error("Failed to fetch components:", err);
+        res.status(500).json({ error: "Failed to fetch components" });
+    }
+});
+
+// Mantenance component by ID
+router.patch("/:plantId/:type/maintain/:id", async (req, res) => {
+    const { plantId, type, id } = req.params;
+    const { efficiency } = req.body; // รับ efficiency จาก frontend
+
+    try {
+        let updatedComponent;
+        const updateData = {
+            lastMaintenance: new Date(), // ใช้วันที่ปัจจุบัน
+            efficiency: efficiency       // กำหนดค่าประสิทธิภาพ
+        };
+
+        if (type === "transformer") {
+            updatedComponent = await TransformerModel.findByIdAndUpdate(
+                id,
+                updateData,
+                { new: true }
+            );
+        } else if (type === "inverter") {
+            updatedComponent = await InverterModel.findByIdAndUpdate(
+                id,
+                updateData,
+                { new: true }
+            );
+        } else {
+            return res.status(400).json({ error: "Invalid component type" });
+        }
+
+        if (!updatedComponent) {
+            return res.status(404).json({ error: "Component not found" });
+        }
+
+        res.json(updatedComponent);
+    } catch (err) {
+        console.error("Failed to update component:", err);
+        res.status(500).json({ error: "Failed to update component" });
     }
 });
 

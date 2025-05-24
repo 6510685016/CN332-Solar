@@ -78,4 +78,10 @@ class Task {
     this.taskDetail = null;
     return `Task deleted: ${oldDetail}`;
   }
+
+  async saveToDB() {
+    const TaskModel = require('./Task');
+    const doc = new TaskModel(this.get_info());
+    return await doc.save();
+  }
 }

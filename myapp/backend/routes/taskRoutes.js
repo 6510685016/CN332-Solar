@@ -36,7 +36,15 @@ router.get("/viewtasks/:taskId", async (req, res) => {
     try {
         const task = await Task.findById(req.params.taskId)
             .populate("solarPlantID", "name")
-            .populate("zoneID", "zoneObj.zoneName zoneObj.solarCellPanel zoneObj.numSolarX zoneObj.numSolarY")
+            .populate({
+                path: "zoneID",
+                populate: {
+                    path: "zoneObj.solarCellPanel",
+                    model: "SolarCell"
+                }
+            });
+        // console.log(task);
+        // console.log(task.zoneID.zoneObj.solarCellPanel);
 
 
         if (!task) {
@@ -155,7 +163,15 @@ router.get("/export/csv/:taskId", async (req, res) => {
     try {
         const task = await Task.findById(req.params.taskId)
             .populate("solarPlantID", "name")
-            .populate("zoneID");
+            .populate({
+                path: "zoneID",
+                populate: {
+                    path: "zoneObj.solarCellPanel",
+                    model: "SolarCell"
+                }
+            });
+
+        // console.log(task);
 
         if (!task || !task.zoneID) {
             return res.status(404).json({ message: "Task or Zone not found" });
@@ -169,10 +185,12 @@ router.get("/export/csv/:taskId", async (req, res) => {
         }
 
         const rows = solarCells.map(cell => ({
-            SolarPlant: task.solarPlantID?.name || "N/A",
-            Zone: zone.zoneObj?.zoneName,
+         Zone: zone.zoneObj?.zoneName,
+            Type: cell.componentType,
             SolarCellPosition: cell.position,
-            LastMaintenance: cell.lastMaintenance?.split('T')[0] || "N/A",
+            LastMaintenance: cell.lastMaintenance
+                ? cell.lastMaintenance.toISOString().split('T')[0]
+                : "N/A",
             Efficiency: cell.efficiency ?? "N/A"
         }));
 

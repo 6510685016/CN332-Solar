@@ -42,8 +42,6 @@ const ViewTask = () => {
     }
   };
 
-
-
   return (
     <div className="task-detail-container">
       <h2 className="title">📋 Task Details</h2>
@@ -63,7 +61,7 @@ const ViewTask = () => {
       </div>
 
       <div className="button-group">
-        <button className="btn download-btn">⬇ Download CSV</button>
+        <button className="btn download-btn" onClick={() => downloadTaskCSV()}>⬇ Download CSV</button>
         <button className="btn back-btn" onClick={() => navigate(-1)}>⬅ Back</button>
       </div>
 

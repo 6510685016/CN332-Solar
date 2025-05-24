@@ -27,19 +27,36 @@ class SolarPlantComponent {
   performMaintenance() {
     return this.maintenanceHelper.maintenance();
   }
-}
 
-// ComponentMaintenance (Abstract)
-class ComponentMaintenance {
-  constructor() {
-    if (new.target === ComponentMaintenance) {
-      throw new Error("Cannot instantiate abstract class.");
+  async saveToDB() {
+    const { Inverter, Transformer, SolarCell } = require('./Component');
+
+    let ComponentModel;
+    switch (this.constructor.name) {
+      case 'Inverter':
+        ComponentModel = Inverter;
+        break;
+      case 'Transformer':
+        ComponentModel = Transformer;
+        break;
+      case 'SolarCell':
+        ComponentModel = SolarCell;
+        break;
+      default:
+        throw new Error("Unknown subclass for saving.");
     }
+
+    const doc = new ComponentModel({
+      position: this.position,
+      lastMaintenance: this.lastMaintenance,
+      efficiency: this.efficiency,
+      maintenanceHelper: this.maintenanceHelper
+    });
+
+    return await doc.save();
   }
 
-  maintenance() {
-    throw new Error("Method 'maintenance()' must be implemented.");
-  }
+
 }
 
-module.exports = { SolarPlantComponent, ComponentMaintenance };
+module.exports = { SolarPlantComponent };

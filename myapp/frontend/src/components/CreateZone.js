@@ -36,6 +36,8 @@ const CreateZone = () => {
     };
 
     return (
+    <div>
+        <button className="back-button" onClick={() => navigate(`/solarplantinfo/${solarPlantId}`)}>⬅ Back</button>
         <div className="create-zone-container">
             <h1>Create New Zone in <span>{solarPlantName || "..."}</span></h1>
 
@@ -78,11 +80,10 @@ const CreateZone = () => {
 
                 <div className="button-group">
                     <button type="submit" className="primary"> Done</button>
-                    <button type="button" className="secondary" onClick={() => navigate(-1)}>⬅ Back</button>
                 </div>
             </form>
         </div>
-
+    </div>
     );
 };
 

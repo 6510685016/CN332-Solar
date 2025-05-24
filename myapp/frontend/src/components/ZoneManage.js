@@ -47,7 +47,7 @@ const ZoneManage = () => {
   return (
     <div className="zone-container">
       <div className="user-manage-container">
-        <button className="back-button" onClick={() => navigate("/dashboard")}>
+        <button className="back-button" onClick={() => navigate(-1)}>
           ⬅ Back
         </button>
   
@@ -56,10 +56,10 @@ const ZoneManage = () => {
           <img src={profile.picture} alt="Profile" className="profile-picture" />
         </div>
   
-        <h2 className="user-manage-title">Zone Manage Dashboard</h2>
+        <h1 className="user-manage-title">View </h1>
       </div>
 
-      <h1 className="zone-title">Select Solar Plant</h1>
+      <h2 className="zone-title">Select Solar Plant</h2>
 
       <div className="plant-list">
         {plants.map((plant) => (

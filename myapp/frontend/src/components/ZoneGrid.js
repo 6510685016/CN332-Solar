@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './ZoneGrid.css';
 
 
@@ -133,20 +134,21 @@ export default function ZoneGrid({
   const handleSaveCellEdit = () => {
     if (!selectedCell) return;
 
-    // Find the cell coordinates
     const { col, row } = parsePosition(selectedCell.position);
 
-    // Update the grid locally
-    const newGridData = [...gridData];
     let color = 'green';
     if (editValues.efficiency < 70) color = 'red';
     else if (editValues.efficiency < 90) color = 'orange';
 
+    const efficiency = editValues.efficiency;
+    const date = editValues.lastMaintenance;
+
+    const newGridData = [...gridData];
     newGridData[row][col] = {
       ...selectedCell,
       color,
-      efficiency: editValues.efficiency,
-      lastMaintenance: new Date(editValues.lastMaintenance).toISOString()
+      efficiency,
+      lastMaintenance: date
     };
 
     setGridData(newGridData);
@@ -155,27 +157,59 @@ export default function ZoneGrid({
     setHasChanges(true);
   };
 
-  const handleSaveAllChanges = () => {
+  const handleSaveAllChanges = async () => {
     if (!originalData || !hasChanges) return;
 
-    // Create a copy of the original solar panel array
-    let updatedPanels = [...originalData.zoneObj.solarCellPanel];
+    try {
+      const requests = [];
 
-    // Update panels based on the current grid data
-    gridData.forEach((row, rowIndex) => {
-      row.forEach((cell, colIndex) => {
-        if (cell.originalIndex >= 0) {
-          // Update existing panel
-          updatedPanels[cell.originalIndex] = {
-            ...updatedPanels[cell.originalIndex],
-            efficiency: cell.efficiency,
-            lastMaintenance: cell.lastMaintenance
-          };
-        }
+      gridData.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+          if (cell.originalIndex >= 0) {
+            // เตรียมข้อมูล PATCH สำหรับ cell นี้
+            const payload = {
+              efficiency: cell.efficiency,
+              lastMaintenance: cell.lastMaintenance,
+            };
+
+            const url = `${process.env.REACT_APP_BACKEND}/zones/${zoneData._id}/${rowIndex}/${colIndex}`;
+
+            const request = axios.patch(url, payload, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            });
+
+            requests.push(request);
+          }
+        });
       });
-    });
-    onUpdateSolarPanels(updatedPanels);
-    setHasChanges(false);
+
+      // รอให้ทุก PATCH เสร็จ
+      await Promise.all(requests);
+
+      // อัปเดต panels และเคลียร์ state
+      let updatedPanels = [...originalData.zoneObj.solarCellPanel];
+      gridData.forEach((row) => {
+        row.forEach((cell) => {
+          if (cell.originalIndex >= 0) {
+            updatedPanels[cell.originalIndex] = {
+              ...updatedPanels[cell.originalIndex],
+              efficiency: cell.efficiency,
+              lastMaintenance: cell.lastMaintenance,
+            };
+          }
+        });
+      });
+
+      onUpdateSolarPanels(updatedPanels);
+      setHasChanges(false);
+      alert("All changes saved successfully.");
+
+    } catch (error) {
+      console.error("Failed to save all changes:", error);
+      alert("Some or all updates failed. Please try again.");
+    }
   };
 
   return (

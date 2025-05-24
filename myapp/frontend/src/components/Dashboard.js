@@ -150,7 +150,7 @@ const Dashboard = () => {
               <div className="card-role-label">Data Analyst</div>
               <div className="header">
                 <span role="img" aria-label="zones">🌍</span> {/* อิโมจิสำหรับ Zones */}
-                <h2>Zones Dashboard</h2>
+                <h2>View Result</h2>
               </div>
               <div className="ability">
                 <h3>Monitor Zone</h3>

@@ -68,7 +68,7 @@ const CreateTask = () => {
 
   return (
     <div className="create-task-container">
-      <button className="back-button" onClick={() => navigate("/taskmanage")}>⬅ Back</button>
+      <button className="back-button" onClick={() => navigate(-1)}>⬅ Back</button>
 
       <h2>Create Task</h2>
       <div className="form-group">

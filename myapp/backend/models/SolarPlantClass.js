@@ -1,4 +1,7 @@
-const { SolarPlantComponent } = require('./SolarPlantComponentClass.js');
+const mongoose = require("mongoose");
+require('./Component.js');
+const SolarCellModel =  mongoose.model("SolarCell");
+const { SolarPlantComponent } = require("./ComponentClass");
 
 class Zone {
     constructor(zoneName, numSolarX, numSolarY) {
@@ -6,18 +9,6 @@ class Zone {
         this.numSolarX = numSolarX;
         this.numSolarY = numSolarY;
         this.solarCellPanel = [];
-    }
-
-    //สร้าง SolarCell push เข้า Array
-    generateSolarCells() {
-        for (let x = 0; x < this.numSolarX; x++) {
-            for (let y = 0; y < this.numSolarY; y++) {
-                const position = `Column: ${x}, Row: ${y}`;
-                const thisDay = new Date().toISOString();
-                const solarCell = new SolarCell(position, thisDay, 100);
-                this.solarCellPanel.push(solarCell);
-            }
-        }
     }
 
     setZoneName(newName) {
