@@ -205,8 +205,8 @@ router.delete("/:id", async (req, res) => {
             return res.status(404).json({ error: "Plant not found" });
         }
 
-        await Transformer.deleteMany({ solarPlantId: plant._id });
-        await Inverter.deleteMany({ solarPlantId: plant._id });
+        await TransformerModel.deleteMany({ solarPlantId: plant._id });
+        await InverterModel.deleteMany({ solarPlantId: plant._id });
         await ZoneModel.deleteMany({ _id: { $in: plant.zones } });
 
         await plant.deleteOne();

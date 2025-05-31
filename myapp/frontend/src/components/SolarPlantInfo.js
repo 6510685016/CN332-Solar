@@ -132,7 +132,26 @@ const SolarPlantInfo = () => {
     })
     .then((res) => {
       alert("อัปเดตการบำรุงรักษาเรียบร้อย");
-      window.location.reload();
+      // const newPlantData = plantData;
+      // newPlantData.type.efficiency = efficiency;
+      // setPlantData(newPlantData);
+      // navigate(`/solarplantinfo/${plantId}`);
+      const fd = async () => {
+        try {
+          // Fetch the components (transformers and inverters) for the selected plant
+          const componentsRes = await axios.get(`${process.env.REACT_APP_BACKEND}/solarplants/${plantId}/components`);
+          const { transformers, inverters } = componentsRes.data;
+          console.log("Fetched components:", transformers, inverters);
+          setPlantData((prevData) => ({
+            ...prevData,
+            transformers: transformers || [],
+            inverters: inverters || [],
+          }));
+        } catch (err) {
+          console.error("Error fetching components:", err);
+        }
+      }
+      fd();
     })
     .catch((err) => {
       console.error("Update failed:", err);
